@@ -11,12 +11,12 @@ export interface IReactions {
 export interface IPost {
   title: string;
   content: string;
-  userId: Types.ObjectId;
+  userId: Schema.Types.ObjectId;
   reactions: IReactions;
   createdAt: Date;
   updatedAt: Date;
 }
-
+console.log("run");
 const postSchema = new Schema<IPost>({
   title: { type: String, required: true },
   content: { type: String, required: true },

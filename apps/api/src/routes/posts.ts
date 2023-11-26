@@ -7,8 +7,8 @@ export const router = express.Router();
 // get all posts
 router.get("/", async (_, res: Response) => {
   try {
-    const users = await Post.find({});
-    return res.json({ users: users });
+    const posts = await Post.find({});
+    return res.json({ posts: posts, message: "updated new" });
   } catch (e) {
     console.log(e);
 
@@ -19,8 +19,9 @@ router.get("/", async (_, res: Response) => {
 // get one post
 router.get("/:id", async (req: Request, res: Response) => {
   try {
-    const id = req.query.id;
-    const post = await Post.findOne({ id });
+    // const id = req.query.id;
+    const id = req.params.id;
+    const post = await Post.findOne({ _id: id });
     if (post) {
       return res.json({ post });
     } else {
@@ -40,7 +41,7 @@ router.post("/", async (req: Request, res: Response) => {
       ...data,
     });
     await newPost.save();
-    return res.json({ id: newPost.id, message: "post created" });
+    return res.json({ id: newPost._id, message: "post created" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "internal error" });
@@ -50,13 +51,22 @@ router.post("/", async (req: Request, res: Response) => {
 // update post
 router.put("/:id", async (req: Request, res: Response) => {
   try {
-    const id = req.query.id;
+    console.log(req.body);
+    const id = req.params.id;
     const data: IPost = req.body;
-    const existingPost = await Post.find({ id });
+    const existingPost = await Post.find({ _id: id });
     if (existingPost) {
-      const updatedPost = await Post.findOneAndUpdate({ id }, { ...data });
+      const updatedPost = await Post.findOneAndUpdate(
+        { _id: id },
+        { ...data },
+        { new: true },
+      );
       if (updatedPost) {
-        res.json({ id: updatedPost.id, message: "post updated" });
+        res.json({
+          id: updatedPost._id,
+          updatedPost: updatedPost,
+          message: "post updated",
+        });
       } else {
         res.status(402).json({ message: "failed to update" });
       }
@@ -64,6 +74,7 @@ router.put("/:id", async (req: Request, res: Response) => {
       res.status(403).json({ message: "Post not found" });
     }
   } catch (e) {
+    console.log(e);
     res.status(500).json({ message: "internal error" });
   }
 });
@@ -71,12 +82,12 @@ router.put("/:id", async (req: Request, res: Response) => {
 // delete post
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
-    const id = req.query.id;
-    const existingPost = await Post.find({ id });
+    const id = req.params.id;
+    const existingPost = await Post.find({ _id: id });
     if (existingPost) {
-      const deletedPost = await Post.deleteOne({ id });
+      const deletedPost = await Post.deleteOne({ _id: id });
       if (deletedPost) {
-        res.json({ id, message: "Post deleted" });
+        res.json({ deletedPost, message: "Post deleted" });
       } else {
         res.status(402).json({ message: "failed to delete" });
       }

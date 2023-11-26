@@ -16,8 +16,8 @@ router.get("/", async (_, res: Response) => {
 // get one user
 router.get("/:id", async (req: Request, res: Response) => {
   try {
-    const id = req.query.id;
-    const existingUser = await User.findOne({ id });
+    const id = req.params.id;
+    const existingUser = await User.findOne({ _id: id });
     if (existingUser) {
       res.json({ existingUser });
     } else {
