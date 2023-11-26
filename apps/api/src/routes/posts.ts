@@ -1,6 +1,6 @@
 import express from "express";
 import { Request, Response } from "express";
-import { IPost, Post } from "../models";
+import { IPost, IReactions, Post, User } from "../models";
 
 export const router = express.Router();
 
@@ -41,7 +41,7 @@ router.post("/", async (req: Request, res: Response) => {
       ...data,
     });
     await newPost.save();
-    return res.json({ id: newPost._id, message: "post created" });
+    return res.json({ _id: newPost._id, message: "post created" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "internal error" });
@@ -87,12 +87,61 @@ router.delete("/:id", async (req: Request, res: Response) => {
     if (existingPost) {
       const deletedPost = await Post.deleteOne({ _id: id });
       if (deletedPost) {
-        res.json({ deletedPost, message: "Post deleted" });
+        res.json({ _id: id, message: "Post deleted" });
       } else {
         res.status(402).json({ message: "failed to delete" });
       }
     } else {
       res.status(403).json({ message: "Post not found" });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ message: "internal error" });
+  }
+});
+
+// posts via userId
+router.get("/?userId", async (req: Request, res: Response) => {
+  try {
+    const userId = req.query.userId;
+    const existingUser = await User.findOne({ _id: userId });
+    if (existingUser) {
+      const posts = await Post.find({ userId: existingUser._id });
+      if (posts) {
+        res.json({ posts });
+      } else {
+        res.status(402).json({ message: "posts dose not exists" });
+      }
+    } else {
+      res.status(403).json({ message: "User dose not exists" });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ message: "internal error" });
+  }
+});
+
+// add reactions to post
+router.patch("/:id", async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const reactions: IReactions = req.body;
+    const existingPost = await Post.findOne({ _id: id });
+    if (existingPost) {
+      const updatedPost = await Post.findOneAndUpdate(
+        { _id: id },
+        {
+          reactions,
+        },
+        {
+          new: true,
+        },
+      );
+      if (updatedPost) {
+        res.json({ id: updatedPost._id, message: "reactions added" });
+      } else {
+        res.status(402).json({ message: "failed to add reactions" });
+      }
     }
   } catch (e) {
     console.log(e);
