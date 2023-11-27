@@ -61,3 +61,5 @@ export interface IaddReactions {
   id: string;
   message: string;
 }
+
+export * from "./src/index";
