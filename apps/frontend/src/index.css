@@ -28,13 +28,16 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  padding: 0px;
+  margin: 0px;
 }
-
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
-
+textarea {
+  height: 200px;
+}
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -54,6 +57,84 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+article {
+  border: 1px solid white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  margin: 10px;
+}
+
+input {
+  margin: 4px;
+  display: "block";
+}
+
+header {
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background-color: purple;
+  color: whitesmoke;
+  position: sticky;
+  top: 0;
+}
+
+nav {
+  display: flex;
+  justify-content: flex-end;
+}
+
+nav ul {
+  list-style-type: none;
+}
+
+nav ul li {
+  display: inline-block;
+  margin-right: 1rem;
+}
+
+nav a,
+nav a:visited {
+  color: #fff;
+  text-decoration: none;
+}
+
+nav a:hover,
+nav a:focus {
+  text-decoration: underline;
+}
+
+.postCredict {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+input,
+textarea,
+button,
+select {
+  font: inherit;
+  margin-bottom: 1em;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+form > label: {
+  align-items: flex-start;
+}
+
+.deleteButton {
+  background-color: palevioletred;
+  color: white;
+}
+.reactionButtons {
+  display: flex;
+  justify-content: space-between;
+}
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

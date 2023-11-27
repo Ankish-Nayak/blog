@@ -18,18 +18,20 @@ const AddPostForm = () => {
     isError,
     isSuccess,
     error,
-  } = useGetUsersQuery();
+  } = useGetUsersQuery("getUsers");
 
   let userOptions;
 
   if (isLoadingUser) {
-    userOptions = <p>Loading...</p>;
+    userOptions = <option value={"loading.."}>Loading...</option>;
   } else if (isSuccess) {
     userOptions = users.ids.map((id) => (
-      <option value={id}>{users.entities[id]?.name}</option>
+      <option key={id} value={id}>
+        {users.entities[id]?.name}
+      </option>
     ));
   } else if (isError) {
-    userOptions = <p>{JSON.stringify(error)}</p>;
+    userOptions = <option>{JSON.stringify(error)}</option>;
   }
 
   const onAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -57,7 +59,7 @@ const AddPostForm = () => {
   };
 
   return (
-    <section>
+    <section key={"new"}>
       <h2>Add a new post</h2>
       <form>
         <label htmlFor="postTitle">Post Title:</label>

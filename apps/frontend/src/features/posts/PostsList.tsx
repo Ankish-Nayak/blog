@@ -3,7 +3,7 @@ import PostExcerpt from "./PostExcerpt";
 import { selectPostIds, useGetPostsQuery } from "./postsSlice";
 
 const PostsList = () => {
-  const { error, isLoading, isError, isSuccess } = useGetPostsQuery();
+  const { error, isLoading, isError, isSuccess } = useGetPostsQuery("getPosts");
   const orderedPosts = useSelector(selectPostIds);
   let content;
   if (isLoading) {

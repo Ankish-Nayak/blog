@@ -1,5 +1,5 @@
 import { RootState } from "../../app/store";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -12,20 +12,28 @@ const EditPostForm = () => {
   const { postId } = useParams() as { postId: string };
   const navigate = useNavigate();
 
+  const post = useSelector((state: RootState) => selectPostById(state, postId));
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
 
+  useEffect(() => {
+    if (post) {
+      setTitle(post?.title);
+      setContent(post?.content);
+      setUserId(post?.userId || "");
+    }
+  }, [post]);
+
   const [deletePost] = useDeletePostMutation();
   const [updatePost, { isLoading }] = useUpdatePostMutation();
-  const post = useSelector((state: RootState) => selectPostById(state, postId));
   const {
     data: users,
     isLoading: isLoadingUser,
     isError,
     isSuccess,
     error,
-  } = useGetUsersQuery();
+  } = useGetUsersQuery("getUsers");
   if (!post) {
     return (
       <section>

@@ -19,7 +19,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     const id = req.params.id;
     const existingUser = await User.findOne({ _id: id });
     if (existingUser) {
-      res.json({ existingUser });
+      res.json({ user: existingUser });
     } else {
       res.status(403).json({ message: "User not found" });
     }

@@ -26,6 +26,19 @@ export interface IPost {
   reactions: IReactions;
 }
 
+const newPostData = (data: IgetPost) => {
+  const { post: oldPost } = data;
+  return {
+    id: oldPost._id,
+    userId: oldPost.userId,
+    title: oldPost.title,
+    content: oldPost.content,
+    // @ts-expect-error depends on backend
+    date: oldPost.updatedAt as string,
+    reactions: oldPost.reactions,
+  };
+};
+
 const postsAdapter = createEntityAdapter<IPost>({
   sortComparer: (a, b) => b.date.localeCompare(a.date),
 });
@@ -37,32 +50,15 @@ export const postsApiSlice = apiSlice.injectEndpoints({
     getPost: builder.query<IPost, string>({
       query: (id) => `/posts/${id}`,
       transformResponse: (res: IgetPost) => {
-        const newPost: IPost = {
-          id: res.post._id,
-          title: res.post.title,
-          content: res.post.content,
-          reactions: res.post.reactions,
-          date: res.post.updatedAt.toDateString(),
-          userId: res.post.userId,
-        };
-        return newPost;
+        return newPostData(res);
       },
     }),
-    getPosts: builder.query<EntityState<IPost>, void>({
+    getPosts: builder.query<EntityState<IPost>, string>({
       query: () => "/posts",
       transformResponse: (res: IgetPosts) => {
-        const loadedPosts = res.posts.map((post) => {
-          const newPost: IPost = {
-            id: post._id,
-            userId: post.userId,
-            title: post.title,
-            content: post.content,
-            date: post.updatedAt.toDateString(),
-            reactions: post.reactions,
-          };
-
-          return newPost;
-        });
+        const loadedPosts = res.posts.map((post) =>
+          newPostData({ post: post }),
+        );
 
         return postsAdapter.setAll(initialState, loadedPosts);
       },
@@ -78,15 +74,9 @@ export const postsApiSlice = apiSlice.injectEndpoints({
     getPostsByUserId: builder.query<EntityState<IPost>, string>({
       query: (userId) => `/posts/?userId=${userId}`,
       transformResponse: (res: IgetPostsByUserId) => {
-        const loadedPosts = res.posts.map((post) => {
-          return {
-            id: post._id,
-            title: post.title,
-            content: post.content,
-            date: post.updatedAt.toDateString(),
-            reactions: post.reactions,
-          };
-        });
+        const loadedPosts = res.posts.map((post) =>
+          newPostData({ post: post }),
+        );
         return postsAdapter.setAll(initialState, loadedPosts);
       },
       providesTags: (result) => {
@@ -153,8 +143,18 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         { dispatch, queryFulfilled },
       ) {
         const patchResult = dispatch(
-          postsApiSlice.util.updateQueryData("getPosts", undefined, (draft) => {
-            const post = draft.entities[postId];
+          postsApiSlice.util.updateQueryData(
+            "getPosts",
+            "getPosts",
+            (draft) => {
+              const post = draft.entities[postId];
+              if (post) post.reactions = reactions;
+            },
+          ),
+        );
+        const patchResult2 = dispatch(
+          postsApiSlice.util.updateQueryData("getPost", "getPost", (draft) => {
+            const post = draft;
             if (post) post.reactions = reactions;
           }),
         );
@@ -162,6 +162,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
           await queryFulfilled;
         } catch (e) {
           patchResult.undo();
+          patchResult2.undo();
         }
       },
     }),
@@ -178,7 +179,8 @@ export const {
   useGetPostQuery,
 } = postsApiSlice;
 
-export const selectPostsResult = postsApiSlice.endpoints.getPosts.select();
+export const selectPostsResult =
+  postsApiSlice.endpoints.getPosts.select("getPosts");
 
 const selectPostsData = createSelector(
   [selectPostsResult],

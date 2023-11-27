@@ -14,6 +14,7 @@ const ReactionButtons = ({ post }: { post: IPost }) => {
     ([name, emoji]: [name: string, emoji: string]) => {
       return (
         <button
+          key={name}
           type="button"
           onClick={() => {
             const newValue = post.reactions[name as IReaction] + 1;

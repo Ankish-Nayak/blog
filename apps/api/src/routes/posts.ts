@@ -4,15 +4,37 @@ import { IPost, IReactions, Post, User } from "../models";
 
 export const router = express.Router();
 
-// get all posts
-router.get("/", async (_, res: Response) => {
-  try {
-    const posts = await Post.find({});
-    return res.json({ posts: posts, message: "updated new" });
-  } catch (e) {
-    console.log(e);
+// get all posts and get by userId
+router.get("/", async (req: Request, res: Response) => {
+  console.log("get all post", req.query);
+  if (typeof req.query.userId === "string") {
+    try {
+      const userId: string = req.query.userId;
+      console.log(req.query);
+      const existingUser = await User.findOne({ _id: userId });
+      if (existingUser) {
+        const posts = await Post.find({ userId: existingUser._id });
+        if (posts) {
+          res.json({ posts });
+        } else {
+          res.status(402).json({ message: "posts dose not exists" });
+        }
+      } else {
+        res.status(403).json({ message: "User dose not exists" });
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ message: "internal error" });
+    }
+  } else {
+    try {
+      const posts = await Post.find({});
+      return res.json({ posts: posts, message: "updated new" });
+    } catch (e) {
+      console.log(e);
 
-    return res.status(500).json({ message: "internal error" });
+      return res.status(500).json({ message: "internal error" });
+    }
   }
 });
 
@@ -93,27 +115,6 @@ router.delete("/:id", async (req: Request, res: Response) => {
       }
     } else {
       res.status(403).json({ message: "Post not found" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ message: "internal error" });
-  }
-});
-
-// posts via userId
-router.get("/?userId", async (req: Request, res: Response) => {
-  try {
-    const userId = req.query.userId;
-    const existingUser = await User.findOne({ _id: userId });
-    if (existingUser) {
-      const posts = await Post.find({ userId: existingUser._id });
-      if (posts) {
-        res.json({ posts });
-      } else {
-        res.status(402).json({ message: "posts dose not exists" });
-      }
-    } else {
-      res.status(403).json({ message: "User dose not exists" });
     }
   } catch (e) {
     console.log(e);

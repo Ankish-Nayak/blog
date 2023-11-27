@@ -27,8 +27,8 @@ const UserPage = () => {
     content = (
       <ol>
         {posts.ids.map((id) => (
-          <li>
-            <Link to={`/posts/${id}`}>{posts.entities[id]?.title}</Link>
+          <li key={id}>
+            <Link to={`/post/${id}`}>{posts.entities[id]?.title}</Link>
           </li>
         ))}
       </ol>

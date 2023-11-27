@@ -8,25 +8,31 @@ const UsersList = () => {
     isSuccess,
     isError,
     error,
-  } = useGetUsersQuery();
+  } = useGetUsersQuery("getUsers");
 
   let content;
   if (isLoading) {
     content = <p>Loading...</p>;
   } else if (isSuccess) {
-    content = (
+    const renderedList = (
       <ol>
         {users.ids.map((id) => (
-          <Link to={`/users/${id}`}>
+          <Link to={`/users/${users.entities[id]?.id}`}>
             <li key={id}>{users.entities[id]?.name}</li>
           </Link>
         ))}
       </ol>
     );
+    content = (
+      <section>
+        <h2>Users</h2>
+        {renderedList}
+      </section>
+    );
   } else if (isError) {
     content = <p>{JSON.stringify(error)}</p>;
   }
-  return <section>{content}</section>;
+  return content;
 };
 
 export default UsersList;
