@@ -1,6 +1,7 @@
 import express from "express";
 import { Request, Response } from "express";
 import { IPost, IReactions, Post, User } from "models";
+import { authenticateJwt } from "../middlewares/auth";
 
 export const router = express.Router();
 
@@ -56,7 +57,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 });
 
 // create new post
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", authenticateJwt, async (req: Request, res: Response) => {
   try {
     const data: IPost = req.body;
     const newPost = new Post({
@@ -71,7 +72,7 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 // update post
-router.put("/:id", async (req: Request, res: Response) => {
+router.put("/:id", authenticateJwt, async (req: Request, res: Response) => {
   try {
     console.log(req.body);
     const id = req.params.id;
@@ -102,7 +103,7 @@ router.put("/:id", async (req: Request, res: Response) => {
 });
 
 // delete post
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", authenticateJwt, async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     const existingPost = await Post.find({ _id: id });
