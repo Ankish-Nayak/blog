@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
-import { User } from "../models";
+import { User } from "models";
 export const router = express.Router();
-
 // get all users
 router.get("/", async (_, res: Response) => {
   try {

@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { IPost, IReactions, Post, User, run } from "../models";
+import { IPost, IReactions, Post, User, run } from "models";
 import mongoose from "mongoose";
 
 interface Ires {

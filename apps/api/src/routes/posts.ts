@@ -1,6 +1,6 @@
 import express from "express";
 import { Request, Response } from "express";
-import { IPost, IReactions, Post, User } from "../models";
+import { IPost, IReactions, Post, User } from "models";
 
 export const router = express.Router();
 
