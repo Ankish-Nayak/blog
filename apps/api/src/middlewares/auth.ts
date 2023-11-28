@@ -22,10 +22,10 @@ export const authenticateJwt = async (
       if (!payload || typeof payload === "string") {
         return res.status(403).json({ message: "type error" });
       }
-      req.headers["name"] = payload.user;
+      req.headers["name"] = payload.name;
       req.headers["userId"] = payload.userId;
+      next();
     });
-    next();
   } else {
     res.status(401).json({ message: "invalid token" });
   }

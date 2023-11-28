@@ -9,6 +9,17 @@ import { refreshLoginSession } from "../helpers/removeExpiryToken";
 config();
 export const router = express.Router();
 
+// me
+router.post("/me", authenticateJwt, async (req: Request, res: Response) => {
+  console.log(req.headers);
+  const name = req.headers.name;
+  if (typeof name === "undefined") {
+    res.status(403).json({ message: "user not logged in" });
+  } else {
+    res.json({ name, message: "found" });
+  }
+});
+
 // login route for user
 router.post("/login", async (req: Request, res: Response) => {
   const secret = process.env.SECRET;
