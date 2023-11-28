@@ -10,5 +10,11 @@ export const loginTypes = z.object({
   password: z.string(),
 });
 
+export const updateProfileTypes = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+});
+
 export type signUpParams = z.infer<typeof signUpTypes>;
 export type loginParams = z.infer<typeof loginTypes>;
+export type UpdateProfileParams = z.infer<typeof updateProfileTypes>;

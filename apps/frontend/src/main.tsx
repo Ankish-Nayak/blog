@@ -8,8 +8,8 @@ import { usersApiSlice } from "./features/users/usersSlice.ts";
 import { postsApiSlice } from "./features/posts/postsSlice.ts";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-store.dispatch(usersApiSlice.endpoints.getUsers.initiate());
-store.dispatch(postsApiSlice.endpoints.getPosts.initiate());
+store.dispatch(usersApiSlice.endpoints.getUsers.initiate("getUsers"));
+store.dispatch(postsApiSlice.endpoints.getPosts.initiate("getUsers"));
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
