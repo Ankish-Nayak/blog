@@ -7,11 +7,9 @@ export const router = express.Router();
 
 // get all posts and get by userId
 router.get("/", async (req: Request, res: Response) => {
-  console.log("get all post", req.query);
   if (typeof req.query.userId === "string") {
     try {
       const userId: string = req.query.userId;
-      console.log(req.query);
       const existingUser = await User.findOne({ _id: userId });
       if (existingUser) {
         const posts = await Post.find({ userId: existingUser._id });
@@ -27,6 +25,31 @@ router.get("/", async (req: Request, res: Response) => {
       console.log(e);
       res.status(500).json({ message: "internal error" });
     }
+  } else if (typeof req.query.name === "string") {
+    try {
+      const name: string = req.query.name;
+      const users = await User.find({ name: name });
+      const ids = users.map((user) => user._id.toString());
+      console.log(ids);
+      if (typeof req.query.title === "string") {
+        const posts = await Post.find({
+          userId: { $in: ids },
+          title: { $regex: req.query.title, $options: "i" },
+        });
+        res.json({ posts });
+      } else {
+        const posts = await Post.find({ userId: { $in: ids } });
+        res.json({ posts });
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ message: "internal error" });
+    }
+  } else if (typeof req.query.title === "string") {
+    const posts = await Post.find({
+      title: { $regex: req.query.title, $options: "i" },
+    });
+    res.json({ posts });
   } else {
     try {
       const posts = await Post.find({});

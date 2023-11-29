@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import Cookies from "cookies";
 import jwt from "jsonwebtoken";
 import { loginTypes, signUpTypes } from "types";
-import { User } from "models";
+import { Post, User } from "models";
 import { authenticateJwt } from "../middlewares/auth";
 import { config } from "dotenv";
 import { refreshLoginSession } from "../helpers/removeExpiryToken";
@@ -196,14 +196,28 @@ router.post("/logout", authenticateJwt, async (req: Request, res: Response) => {
   }
 });
 
-// get all users
-router.get("/", async (_, res: Response) => {
-  try {
-    const users = await User.find({});
-    return res.json({ users });
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ message: "internal error" });
+router.get("/", async (req: Request, res: Response) => {
+  const regex = req.query.regex;
+  console.log("req.query", req.query);
+  // get users with pattern
+  if (typeof regex === "string" && regex.length !== 0) {
+    console.log("regex", regex);
+    try {
+      const users = await User.find({ name: { $regex: regex, $options: "i" } });
+      res.json({ users });
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ message: "internal error" });
+    }
+  } else {
+    // get all users
+    try {
+      const users = await User.find({});
+      return res.json({ users });
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ message: "internal error" });
+    }
   }
 });
 
