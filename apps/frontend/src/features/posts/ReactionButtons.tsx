@@ -1,3 +1,4 @@
+import { Button, Stack, Typography } from "@mui/material";
 import { IPost, IReaction, useAddReactionMutation } from "./postsSlice";
 
 const reactionEmoji = {
@@ -13,7 +14,9 @@ const ReactionButtons = ({ post }: { post: IPost }) => {
   const reactionButtons = Object.entries(reactionEmoji).map(
     ([name, emoji]: [name: string, emoji: string]) => {
       return (
-        <button
+        <Button
+          variant="contained"
+          size="small"
           key={name}
           type="button"
           onClick={() => {
@@ -27,12 +30,22 @@ const ReactionButtons = ({ post }: { post: IPost }) => {
             });
           }}
         >
-          {emoji} {post.reactions[name as IReaction]}
-        </button>
+          <Typography variant="button">{emoji}</Typography>
+          <Typography>{post.reactions[name as IReaction]}</Typography>
+        </Button>
       );
     },
   );
-  return reactionButtons;
+  return (
+    <Stack
+      direction={"row"}
+      flexWrap={"wrap"}
+      justifyContent={"space-evenly"}
+      className={"reactionButtons"}
+    >
+      {reactionButtons}
+    </Stack>
+  );
 };
 
 export default ReactionButtons;

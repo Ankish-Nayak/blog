@@ -1,47 +1,89 @@
+import {
+  Box,
+  Button,
+  Card,
+  CardActionArea,
+  CardContent,
+  Stack,
+  ThemeProvider,
+  Typography,
+  createTheme,
+} from "@mui/material";
+// import { createTheme } from "@mui/material/styles";
 import PostAuthor from "./PostAuthor";
 import ReactionButtons from "./ReactionButtons";
 import TimeAgo from "./TimeAgo";
-import { useGetPostsQuery } from "./postsSlice";
-import { Link } from "react-router-dom";
+import { selectPostById } from "./postsSlice";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../../app/store";
 
 const PostExcerpt = ({ postId }: { postId: string }) => {
-  const { post, isLoading, isError, error, isSuccess } = useGetPostsQuery(
-    "getPosts",
-    {
-      selectFromResult: ({ data, isLoading, isError, isSuccess, error }) => ({
-        post: data?.entities[postId],
-        isError,
-        error,
-        isSuccess,
-        isLoading,
-      }),
-    },
-  );
+  const post = useSelector((state: RootState) => selectPostById(state, postId));
+  const navigate = useNavigate();
   let content;
-  if (isLoading) {
-    content = <p>Loading...</p>;
-  } else if (isSuccess) {
-    if (post) {
-      content = (
-        <article key={postId}>
-          <h3>{post.title}</h3>
-          <p>{post.content.substring(0, 75)}</p>
-          <p className="postCredict">
-            <Link to={`/post/${post.id}`}>View Post </Link>
-            {(post.userId && <PostAuthor userId={post.userId} />) ||
-              "by unknown"}
-            <TimeAgo timestamp={post.date} />
-          </p>
-          <div className="reactionButtons">
-            <ReactionButtons post={post} />
-          </div>
-        </article>
-      );
-    } else {
-      content = <p>Post dose not exist</p>;
-    }
-  } else if (isError) {
-    content = <p>{JSON.stringify(error)}</p>;
+  if (post) {
+    content = (
+      <ThemeProvider
+        theme={() =>
+          createTheme({
+            palette: {
+              primary: {
+                light: "#B6BBC4",
+                main: "#31304D",
+                dark: "#161A30",
+              },
+            },
+          })
+        }
+      >
+        <Box className={"postExcerpt"} sx={{}}>
+          <Card
+            variant="outlined"
+            sx={{
+              width: "400px",
+              height: "300px",
+              bgcolor: `primary.light`,
+              fontSize: "10px",
+            }}
+          >
+            <CardContent>
+              <Typography variant="h5">{post.title}</Typography>
+              <Typography variant="body1" gutterBottom>
+                {post.content.substring(0, 75)}
+              </Typography>
+              <Stack
+                flexDirection={"row"}
+                justifyContent={"space-evenly"}
+                alignItems={"center"}
+              >
+                <Button
+                  variant="text"
+                  size="small"
+                  color={`primary`}
+                  onClick={() => navigate(`/post/${post.id}`)}
+                >
+                  View Post
+                </Button>
+                {(post.userId && <PostAuthor userId={post.userId} />) ||
+                  "by unknown"}
+                <TimeAgo timestamp={post.date} />
+              </Stack>
+            </CardContent>
+            <CardActionArea
+              sx={{
+                position: "absolute",
+                bottom: "10px",
+              }}
+            >
+              <ReactionButtons post={post} />
+            </CardActionArea>
+          </Card>
+        </Box>
+      </ThemeProvider>
+    );
+  } else {
+    content = <p>Post dose not exist</p>;
   }
   return content;
 };

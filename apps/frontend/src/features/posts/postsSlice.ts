@@ -6,6 +6,7 @@ import {
 import { apiSlice } from "../api/apiSlice";
 import { IgetPostsByUserId, IgetPosts, IgetPost } from "types";
 import { RootState } from "../../app/store";
+import { IFilter } from "./filtersSlice";
 
 export type IReaction = "thumbsUp" | "wow" | "heart" | "rocket" | "coffee";
 
@@ -45,6 +46,7 @@ const postsAdapter = createEntityAdapter<IPost>({
 
 const initialState = postsAdapter.getInitialState();
 // TODO: make min to used updated to time instead this one
+
 export const postsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getPost: builder.query<IPost, string>({
@@ -53,8 +55,17 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         return newPostData(res);
       },
     }),
-    getPosts: builder.query<EntityState<IPost>, string>({
-      query: () => "/posts",
+    getPosts: builder.query<EntityState<IPost>, IFilter>({
+      query: (filters) => {
+        let url = "/posts/";
+        if (typeof filters.title !== "undefined") {
+          url = url + `?title=${encodeURI(filters.title)}`;
+        }
+        if (typeof filters.name !== "undefined") {
+          url = url + `?name=${encodeURI(filters.name)}`;
+        }
+        return url;
+      },
       transformResponse: (res: IgetPosts) => {
         const loadedPosts = res.posts.map((post) =>
           newPostData({ post: post }),
@@ -83,6 +94,15 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         return typeof result === "undefined"
           ? []
           : [...result.ids.map((id) => ({ type: "Post" as const, id }))];
+      },
+    }),
+    getPostsByName: builder.query<IPost[], string>({
+      query: (name) => `/posts/?name=${name}`,
+      transformResponse: (res: IgetPostsByUserId) => {
+        const loadedPosts = res.posts.map((post) =>
+          newPostData({ post: post }),
+        );
+        return loadedPosts;
       },
     }),
     addNewPost: builder.mutation<
@@ -145,7 +165,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         const patchResult = dispatch(
           postsApiSlice.util.updateQueryData(
             "getPosts",
-            "getPosts",
+            { title: undefined, name: undefined },
             (draft) => {
               const post = draft.entities[postId];
               if (post) post.reactions = reactions;
@@ -177,10 +197,13 @@ export const {
   useDeletePostMutation,
   useUpdatePostMutation,
   useGetPostQuery,
+  useGetPostsByNameQuery,
 } = postsApiSlice;
 
-export const selectPostsResult =
-  postsApiSlice.endpoints.getPosts.select("getPosts");
+export const selectPostsResult = postsApiSlice.endpoints.getPosts.select({
+  name: undefined,
+  title: undefined,
+});
 
 const selectPostsData = createSelector(
   [selectPostsResult],

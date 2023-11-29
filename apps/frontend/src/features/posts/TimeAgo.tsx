@@ -1,3 +1,4 @@
+import { Typography } from "@mui/material";
 import { parseISO, formatDistanceToNow } from "date-fns";
 const TimeAgo = ({ timestamp }: { timestamp: string }) => {
   let timeAgo = "";
@@ -7,9 +8,9 @@ const TimeAgo = ({ timestamp }: { timestamp: string }) => {
     timeAgo = `${timePeriod}`;
   }
   return (
-    <span title={timestamp}>
+    <Typography title={timestamp}>
       &nbsp; <i>{timeAgo}</i>
-    </span>
+    </Typography>
   );
 };
 

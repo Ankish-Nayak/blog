@@ -1,3 +1,4 @@
+import { Typography } from "@mui/material";
 import { useGetUsersQuery } from "../users/usersSlice";
 import { Link } from "react-router-dom";
 
@@ -23,9 +24,9 @@ const PostAuthor = ({ userId }: { userId: string }) => {
     content = <span>Loading...</span>;
   } else if (isSuccess) {
     content = author ? (
-      <span>
+      <Typography>
         by <Link to={`/users/${userId}`}>{author.name}</Link>
-      </span>
+      </Typography>
     ) : (
       <span>by unkown</span>
     );

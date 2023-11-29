@@ -2,6 +2,16 @@ import { useState } from "react";
 import { useAddNewPostMutation } from "./postsSlice";
 import { useGetUsersQuery } from "../users/usersSlice";
 import { useNavigate } from "react-router-dom";
+import {
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 
 const AddPostForm = () => {
   const [addNewPost, { isLoading }] = useAddNewPostMutation();
@@ -26,9 +36,9 @@ const AddPostForm = () => {
     userOptions = <option value={"loading.."}>Loading...</option>;
   } else if (isSuccess) {
     userOptions = users.ids.map((id) => (
-      <option key={id} value={id}>
+      <MenuItem key={id} value={id}>
         {users.entities[id]?.name}
-      </option>
+      </MenuItem>
     ));
   } else if (isError) {
     userOptions = <option>{JSON.stringify(error)}</option>;
@@ -59,34 +69,56 @@ const AddPostForm = () => {
   };
 
   return (
-    <section key={"new"}>
-      <h2>Add a new post</h2>
-      <form>
-        <label htmlFor="postTitle">Post Title:</label>
-        <input
+    <Stack
+      margin={"auto"}
+      key={"new"}
+      padding={"0px 400px"}
+      textAlign={"center"}
+    >
+      <Typography variant="h5">Add Post</Typography>
+      <Stack textAlign={"center"} flexDirection={"column"}>
+        <TextField
           type="text"
+          variant="outlined"
+          label="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Enter post title"
           name="postTitle"
           id="postTitle"
         />
-        <label htmlFor="postContent">Post Content:</label>
-        <textarea
+        <TextField
           value={content}
-          placeholder="Enter post body"
+          multiline
+          rows={5}
+          maxRows={4}
+          variant="outlined"
+          label="content"
           onChange={(e) => setContent(e.target.value)}
           name="postContent"
           id="postContent"
         />
-        <select id="postUserId" value={userId} onChange={onAuthorChange}>
-          {userOptions}
-        </select>
-        <button type={"button"} onClick={onSavePostClicked} disabled={!canSave}>
+        <FormControl>
+          <InputLabel>users</InputLabel>
+          <Select
+            labelId="postUserId"
+            value={users}
+            label="userId"
+            onChange={onAuthorChange}
+          >
+            {userOptions}
+          </Select>
+        </FormControl>
+        <Button
+          type={"button"}
+          onClick={onSavePostClicked}
+          disabled={!canSave}
+          variant="contained"
+        >
           Save Post
-        </button>
-      </form>
-    </section>
+        </Button>
+      </Stack>
+    </Stack>
   );
 };
 
