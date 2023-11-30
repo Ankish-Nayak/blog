@@ -1,5 +1,6 @@
 import { loginParams, signUpParams } from "types";
 import { apiSlice } from "../api/apiSlice";
+import { logOut, setCredentials } from "./authSlice";
 
 const authSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -11,6 +12,10 @@ const authSlice = apiSlice.injectEndpoints({
           ...data,
         },
       }),
+      transformResponse(res: { name: string; message: string }) {
+        setCredentials({ user: res.name });
+        return res;
+      },
     }),
     signup: builder.mutation<{ name: string; message: string }, signUpParams>({
       query: (data) => ({
@@ -20,12 +25,19 @@ const authSlice = apiSlice.injectEndpoints({
           ...data,
         },
       }),
+      transformResponse(res: { name: string; message: string }) {
+        return res;
+      },
     }),
     logout: builder.mutation<{ message: string }, string>({
       query: () => ({
         url: "/users/logout",
         method: "POST",
       }),
+      transformResponse(res: { name: string; message: string }) {
+        logOut();
+        return res;
+      },
     }),
     me: builder.mutation<{ message: string; name: string }, string>({
       query: () => ({
@@ -49,6 +61,7 @@ const authSlice = apiSlice.injectEndpoints({
       query: () => "/users/profile",
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {

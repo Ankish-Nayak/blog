@@ -7,11 +7,15 @@ import EditPostForm from "./features/posts/EditPostForm";
 import UsersList from "./features/users/UsersList";
 import UserPage from "./features/users/UserPage";
 import AddPostForm from "./features/posts/AddPostForm";
+import Signup from "./features/me/Signup";
+import Login from "./features/me/Login";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
+        <Route path="signup" element={<Signup />} />
+        <Route path="login" element={<Login />} />
         <Route index element={<PostsList />} />
 
         <Route path="post">

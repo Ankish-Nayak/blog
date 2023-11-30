@@ -42,7 +42,7 @@ const PostExcerpt = ({ postId }: { postId: string }) => {
             variant="outlined"
             sx={{
               width: "400px",
-              height: "300px",
+              height: "250px",
               bgcolor: `primary.light`,
               fontSize: "10px",
             }}

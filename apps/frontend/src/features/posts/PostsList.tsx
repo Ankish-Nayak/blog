@@ -27,10 +27,15 @@ const PostsList = () => {
   } else if (isSuccess) {
     const orderedPosts = posts.ids;
     content = orderedPosts.map((id) => (
-      <Grid item key={id}>
+      <div style={{ margin: "5px" }}>
         <PostExcerpt key={id} postId={id.toString()} />
-      </Grid>
+      </div>
     ));
+    // content = orderedPosts.map((id) => (
+    //   <Grid item key={id}>
+    //     <PostExcerpt key={id} postId={id.toString()} />
+    //   </Grid>
+    // ));
   } else if (isError) {
     content = <p>{JSON.stringify(error)}</p>;
   }
@@ -38,15 +43,20 @@ const PostsList = () => {
   return (
     <Stack
       textAlign={"center"}
-      padding={"0px 100px"}
-      border={"1px solid black"}
+      // padding={"0px 100px"}
+      // paddingTop={"50px"}
+      // border={"5px solid black"}
+      justifyContent={"flex-end"}
     >
-      <Typography margin={"10px"} variant="h5">
-        Posts
-      </Typography>
-      <Grid container spacing={1}>
+      {/* <Typography margin={"10px"} variant="h5"> */}
+      {/*   Posts */}
+      {/* </Typography> */}
+      <Stack flexDirection={"row"} flexWrap={"wrap"} padding={"0px 100px"}>
         {content}
-      </Grid>
+      </Stack>
+      {/* <Grid container spacing={1}> */}
+      {/*   {content} */}
+      {/* </Grid> */}
     </Stack>
   );
 };
