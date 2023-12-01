@@ -1,6 +1,5 @@
 import { loginParams, signUpParams } from "types";
 import { apiSlice } from "../api/apiSlice";
-import { logOut, setCredentials } from "./authSlice";
 
 const authSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -13,7 +12,6 @@ const authSlice = apiSlice.injectEndpoints({
         },
       }),
       transformResponse(res: { name: string; message: string }) {
-        setCredentials({ user: res.name });
         return res;
       },
 
@@ -37,14 +35,15 @@ const authSlice = apiSlice.injectEndpoints({
         method: "POST",
       }),
       transformResponse(res: { name: string; message: string }) {
-        logOut();
         return res;
       },
       invalidatesTags: [{ type: "Post", id: "LIST" }],
     }),
     me: builder.query<{ message: string; name: string }, string>({
       query: () => "/users/me",
+      providesTags: ["User"],
     }),
+
     updateProfile: builder.mutation<
       { message: string; name: string },
       { name: string; email: string; password?: string }

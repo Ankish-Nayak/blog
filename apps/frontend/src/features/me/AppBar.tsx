@@ -1,32 +1,40 @@
 import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import Button from "@mui/material/Button";
 import AdbIcon from "@mui/icons-material/Adb";
-import { useNavigate } from "react-router-dom";
-import { useMeQuery } from "./authApiSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../app/store";
-import { setCredentials } from "./authSlice";
-import { useEffect } from "react";
+import { Typography } from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
 import LoggedInAppBar from "./Appbar/LoggedInAppBar";
+import { useMeQuery } from "./authApiSlice";
+import { RootState } from "../../app/store";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { setCredentials } from "./authSlice";
 
 function ResponsiveAppBar() {
-  const { data, isLoading } = useMeQuery("");
-
-  const user = useSelector((state: RootState) => state.auth.user);
-
-  const dispatch = useDispatch();
-  useEffect(() => {
-    if (data) dispatch(setCredentials({ user: data.name }));
-  }, [data, dispatch]);
-
   const navigate = useNavigate();
 
+  const { data, isSuccess, isError } = useMeQuery("");
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  useEffect(() => {
+    if (data && isSuccess) {
+      if (location.pathname !== "/posts") {
+        navigate("posts/");
+      }
+      dispatch(setCredentials({ user: data.name }));
+    }
+    if (isError) {
+      navigate("/");
+    }
+  }, [data, isSuccess, isError]);
+  console.log("user", user);
+  console.log("pathname", location.pathname);
+
   return (
-    <AppBar position="static">
+    <AppBar position="sticky">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
@@ -44,50 +52,11 @@ function ResponsiveAppBar() {
               color: "inherit",
               textDecoration: "none",
             }}
-            onClick={() => (user ? navigate("/posts") : navigate("/login"))}
+            onClick={() => navigate("/login")}
           >
             LOGO
           </Typography>
           {user && <LoggedInAppBar />}
-          {isLoading && <p>Loading..</p>}
-          {user === null && (
-            <Box
-              sx={{
-                display: "flex",
-                width: "100vw",
-                justifyContent: "flex-end",
-              }}
-            >
-              <Button
-                sx={{
-                  bgcolor: "white",
-                  margin: "0 10px",
-                  fontWeight: "700",
-                  ":hover": { bgcolor: "white", fontWeight: "700" },
-                }}
-                onClick={() => {
-                  navigate("/signup");
-                }}
-                focusRipple
-              >
-                Signup
-              </Button>
-              <Button
-                sx={{
-                  bgcolor: "white",
-                  fontWeight: "700",
-                  margin: "0 10px",
-                  ":hover": { bgcolor: "white", fontWeight: "700" },
-                }}
-                onClick={() => {
-                  navigate("/login");
-                }}
-                focusRipple
-              >
-                Login
-              </Button>
-            </Box>
-          )}
         </Toolbar>
       </Container>
     </AppBar>

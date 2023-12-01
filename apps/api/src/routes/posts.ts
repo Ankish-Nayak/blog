@@ -62,20 +62,22 @@ router.get("/", authenticateJwt, async (req: Request, res: Response) => {
   }
 });
 
-// get one post
-router.get("/:id", authenticateJwt, async (req: Request, res: Response) => {
+router.get("/title/", authenticateJwt, async (req: Request, res: Response) => {
   try {
-    // const id = req.query.id;
-    const id = req.params.id;
-    const post = await Post.findOne({ _id: id });
-    if (post) {
-      return res.json({ post });
+    const regex = req.query.regex;
+    if (typeof regex === "string" && regex.length !== 0) {
+      console.log("regex", regex);
+      const titles = await Post.find({
+        title: { $regex: regex, $options: "i" },
+      });
+      res.json({ titles });
     } else {
-      return res.status(403).json({ message: "Post not found" });
+      const titles = await Post.find({});
+      res.json({ titles });
     }
   } catch (e) {
     console.log(e);
-    return res.status(500).json({ message: "internal error" });
+    res.status(500).json({ message: "interna error" });
   }
 });
 
@@ -124,7 +126,22 @@ router.put("/:id", authenticateJwt, async (req: Request, res: Response) => {
     res.status(500).json({ message: "internal error" });
   }
 });
-
+// get one post
+router.get("/:id", authenticateJwt, async (req: Request, res: Response) => {
+  try {
+    // const id = req.query.id;
+    const id = req.params.id;
+    const post = await Post.findOne({ _id: id });
+    if (post) {
+      return res.json({ post });
+    } else {
+      return res.status(403).json({ message: "Post not found" });
+    }
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ message: "internal error" });
+  }
+});
 // delete post
 router.delete("/:id", authenticateJwt, async (req: Request, res: Response) => {
   try {

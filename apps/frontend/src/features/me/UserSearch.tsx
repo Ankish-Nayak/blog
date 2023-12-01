@@ -19,7 +19,7 @@ interface IUser {
 const UserSearch = () => {
   const [name, setName] = useState<string>("");
   const dispatch = useDispatch();
-  const [selectedName, setSelectedName] = useState<IUser>({
+  const [, setSelectedName] = useState<IUser>({
     _id: "",
     name: "",
   });

@@ -10,6 +10,7 @@ import TitleSearch from "../TitleSearch";
 import CustomMenu from "./CustomMenu";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useMeQuery } from "../authApiSlice";
 interface IPage {
   name: string;
   navigateTo: string;
@@ -23,6 +24,8 @@ const pages: IPage[] = [
 const LoggedInAppBar = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
+  // const { isLoading, isSuccess } = useMeQuery("");
+
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     console.log("nav opened");
     setAnchorElNav(event.currentTarget);
@@ -32,6 +35,9 @@ const LoggedInAppBar = () => {
     setAnchorElNav(null);
   };
   const navigate = useNavigate();
+  // if (isLoading) {
+  //   return <p>Loading...</p>;
+  // }
   return (
     <div
       style={{

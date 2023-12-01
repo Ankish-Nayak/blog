@@ -1,4 +1,5 @@
 import { CircularProgress, Menu, MenuItem, Typography } from "@mui/material";
+import React from "react";
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
@@ -6,13 +7,18 @@ import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { logOut } from "../authSlice";
-import { useLogoutMutation } from "../authApiSlice";
+import { logOut, setCredentials } from "../authSlice";
+import { useLogoutMutation, useMeQuery } from "../authApiSlice";
 
 const CustomMenu = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [logout, { isSuccess, isLoading }] = useLogoutMutation();
+  const { data, isLoading: isMeLoading } = useMeQuery("");
 
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (data) dispatch(setCredentials({ user: data.name }));
+  }, [data, dispatch]);
   const [show, setShow] = useState(false);
 
   const navigate = useNavigate();
@@ -44,11 +50,10 @@ const CustomMenu = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      navigate("/login");
+      navigate("/");
     }
   }, [isSuccess, navigate]);
 
-  const dispatch = useDispatch();
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setShow(!show);
     setAnchorElUser(event.currentTarget);
@@ -61,14 +66,14 @@ const CustomMenu = () => {
 
   return (
     <Box sx={{ flexGrow: 0 }}>
-      {isLoading == false && (
+      {isLoading === false && isMeLoading === false && (
         <Tooltip title="Open settings">
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
             <Avatar alt="Remy Sharp">A</Avatar>
           </IconButton>
         </Tooltip>
       )}
-      {isLoading && (
+      {(isLoading || isMeLoading) && (
         <CircularProgress
           sx={{
             color: "whitesmoke",

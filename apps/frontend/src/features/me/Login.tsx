@@ -16,7 +16,11 @@ import CircularIndeterminate from "./loaders/CircurlarIndeterminate";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "./authSlice";
 
-const Login = () => {
+const Login = ({
+  setHaveAccount,
+}: {
+  setHaveAccount: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const dispatch = useDispatch();
@@ -152,7 +156,9 @@ const Login = () => {
             <Button
               variant="text"
               size="medium"
-              onClick={() => navigate("/signup")}
+              onClick={() => {
+                setHaveAccount(false);
+              }}
             >
               Not have Account
             </Button>

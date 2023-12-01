@@ -15,7 +15,11 @@ import { useSignupMutation } from "./authApiSlice";
 import { setCredentials } from "./authSlice";
 import { useDispatch } from "react-redux";
 
-const Signup = () => {
+const Signup = ({
+  setHaveAccount,
+}: {
+  setHaveAccount: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -174,7 +178,7 @@ const Signup = () => {
           <Button
             variant="text"
             size="medium"
-            onClick={() => navigate("/login")}
+            onClick={() => setHaveAccount(true)}
           >
             Have Account
           </Button>
