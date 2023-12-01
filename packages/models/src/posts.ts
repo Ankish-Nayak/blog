@@ -1,4 +1,4 @@
-import { Schema, Types, model } from "mongoose";
+import { Schema, model } from "mongoose";
 
 export interface IReactions {
   thumbsUp: number;
@@ -16,17 +16,56 @@ export interface IPost {
   createdAt: Date;
   updatedAt: Date;
 }
-console.log("run");
+export interface IClick {
+  clickedBy: { type: String };
+  clickedAt: { type: Date };
+}
+
 const postSchema = new Schema<IPost>({
   title: { type: String, required: true },
   content: { type: String, required: true },
   userId: { type: Schema.Types.ObjectId, ref: "User" },
   reactions: {
-    thumbsUp: { type: Number },
-    wow: { type: Number },
-    heart: { type: Number },
-    rocket: { type: Number },
-    coffee: { type: Number },
+    thumbsUp: [
+      {
+        type: {
+          clickedBy: { type: String },
+          clickedAt: { type: Date },
+        },
+      },
+    ],
+    wow: [
+      {
+        type: {
+          clickedBy: { type: String },
+          clickedAt: { type: Date },
+        },
+      },
+    ],
+    heart: [
+      {
+        type: {
+          clickedBy: { type: String },
+          clickedAt: { type: Date, default: Date.now },
+        },
+      },
+    ],
+    rocket: [
+      {
+        type: {
+          clickedBy: { type: String },
+          clickedAt: { type: Date, default: Date.now },
+        },
+      },
+    ],
+    coffee: [
+      {
+        type: {
+          clickedBy: { type: String },
+          clickedAt: { type: Date, default: Date.now },
+        },
+      },
+    ],
   },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
