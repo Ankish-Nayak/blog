@@ -62,7 +62,7 @@ const AddPostForm = () => {
       setTitle("");
       setContent("");
       setUserId("");
-      navigate("/");
+      navigate("/posts");
     } catch (e) {
       console.log("failed to save");
     }

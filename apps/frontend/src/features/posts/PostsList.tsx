@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import PostExcerpt from "./PostExcerpt";
 import { useGetPostsQuery } from "./postsSlice";
-import { Grid, Skeleton, Stack, Typography } from "@mui/material";
+import { Skeleton, Stack } from "@mui/material";
 import { RootState } from "../../app/store";
 
 const PostsList = () => {
@@ -18,9 +18,13 @@ const PostsList = () => {
     const array = [];
     for (let index = 0; index < 12; index++) {
       array.push(
-        <Grid item key={index}>
+        <div
+          style={{
+            margin: "5px",
+          }}
+        >
           <Skeleton variant="rectangular" width={400} height={300}></Skeleton>
-        </Grid>,
+        </div>,
       );
     }
     content = array;
@@ -31,32 +35,15 @@ const PostsList = () => {
         <PostExcerpt key={id} postId={id.toString()} />
       </div>
     ));
-    // content = orderedPosts.map((id) => (
-    //   <Grid item key={id}>
-    //     <PostExcerpt key={id} postId={id.toString()} />
-    //   </Grid>
-    // ));
   } else if (isError) {
     content = <p>{JSON.stringify(error)}</p>;
   }
   console.log(content);
   return (
-    <Stack
-      textAlign={"center"}
-      // padding={"0px 100px"}
-      // paddingTop={"50px"}
-      // border={"5px solid black"}
-      justifyContent={"flex-end"}
-    >
-      {/* <Typography margin={"10px"} variant="h5"> */}
-      {/*   Posts */}
-      {/* </Typography> */}
+    <Stack textAlign={"center"} justifyContent={"flex-end"}>
       <Stack flexDirection={"row"} flexWrap={"wrap"} padding={"0px 100px"}>
         {content}
       </Stack>
-      {/* <Grid container spacing={1}> */}
-      {/*   {content} */}
-      {/* </Grid> */}
     </Stack>
   );
 };

@@ -16,6 +16,8 @@ const authSlice = apiSlice.injectEndpoints({
         setCredentials({ user: res.name });
         return res;
       },
+
+      invalidatesTags: [{ type: "Post", id: "LIST" }],
     }),
     signup: builder.mutation<{ name: string; message: string }, signUpParams>({
       query: (data) => ({
@@ -38,12 +40,10 @@ const authSlice = apiSlice.injectEndpoints({
         logOut();
         return res;
       },
+      invalidatesTags: [{ type: "Post", id: "LIST" }],
     }),
-    me: builder.mutation<{ message: string; name: string }, string>({
-      query: () => ({
-        url: "/users/me",
-        method: "POST",
-      }),
+    me: builder.query<{ message: string; name: string }, string>({
+      query: () => "/users/me",
     }),
     updateProfile: builder.mutation<
       { message: string; name: string },
@@ -68,9 +68,9 @@ export const {
   useLoginMutation,
   useLogoutMutation,
   useSignupMutation,
-  useMeMutation,
   useUpdateProfileMutation,
   useGetProfileQuery,
+  useMeQuery,
 } = authSlice;
 
 export default authSlice;

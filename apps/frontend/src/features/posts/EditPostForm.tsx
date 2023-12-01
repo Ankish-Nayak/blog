@@ -72,7 +72,7 @@ const EditPostForm = () => {
         setTitle("");
         setContent("");
         setUserId("");
-        navigate("/");
+        navigate("/posts");
       } catch (e) {
         console.log(e);
       }
@@ -86,7 +86,7 @@ const EditPostForm = () => {
       setTitle("");
       setContent("");
       setUserId("");
-      navigate("/");
+      navigate("/posts");
     } catch (e) {
       console.log("failed to delete", e);
     }

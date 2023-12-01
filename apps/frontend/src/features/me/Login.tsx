@@ -82,10 +82,9 @@ const Login = () => {
       }
     }
   }, [email, password, dataValidation, isLoading, isSuccess, login, dispatch]);
-
   useEffect(() => {
     if (isSuccess) {
-      navigate("/");
+      navigate("/posts");
     }
   }, [isSuccess, navigate]);
 
