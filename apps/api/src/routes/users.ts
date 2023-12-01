@@ -10,7 +10,7 @@ config();
 export const router = express.Router();
 
 // me
-router.post("/me", authenticateJwt, async (req: Request, res: Response) => {
+router.get("/me", authenticateJwt, async (req: Request, res: Response) => {
   console.log(req.headers);
   const name = req.headers.name;
   if (typeof name === "undefined") {

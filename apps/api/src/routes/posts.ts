@@ -6,7 +6,7 @@ import { authenticateJwt } from "../middlewares/auth";
 export const router = express.Router();
 
 // get all posts and get by userId
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", authenticateJwt, async (req: Request, res: Response) => {
   if (typeof req.query.userId === "string") {
     try {
       const userId: string = req.query.userId;
@@ -63,7 +63,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 // get one post
-router.get("/:id", async (req: Request, res: Response) => {
+router.get("/:id", authenticateJwt, async (req: Request, res: Response) => {
   try {
     // const id = req.query.id;
     const id = req.params.id;
@@ -147,7 +147,7 @@ router.delete("/:id", authenticateJwt, async (req: Request, res: Response) => {
 });
 
 // add reactions to post
-router.patch("/:id", async (req: Request, res: Response) => {
+router.patch("/:id", authenticateJwt, async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     const reactions: IReactions = req.body;
