@@ -1,72 +1,44 @@
 import { Schema, model } from "mongoose";
 
-export interface IReactions {
-  thumbsUp: number;
-  wow: number;
-  heart: number;
-  rocket: number;
-  coffee: number;
-}
-
 export interface IPost {
   title: string;
   content: string;
   userId: Schema.Types.ObjectId;
-  reactions: IReactions;
+  reactionsCount: {
+    thumbsUp: number;
+    heart: number;
+    wow: number;
+    rocket: number;
+    coffee: number;
+  };
+  reactions: Schema.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
-export interface IClick {
-  clickedBy: { type: String };
-  clickedAt: { type: Date };
-}
 
+export interface IReactions {
+  thumbsUp: Schema.Types.ObjectId[];
+  wow: Schema.Types.ObjectId[];
+  heart: Schema.Types.ObjectId[];
+  rocket: Schema.Types.ObjectId[];
+  coffee: Schema.Types.ObjectId[];
+}
+export interface IClick {
+  clickedBy: string;
+  clickedAt: Date;
+}
 const postSchema = new Schema<IPost>({
   title: { type: String, required: true },
   content: { type: String, required: true },
   userId: { type: Schema.Types.ObjectId, ref: "User" },
-  reactions: {
-    thumbsUp: [
-      {
-        type: {
-          clickedBy: { type: String },
-          clickedAt: { type: Date },
-        },
-      },
-    ],
-    wow: [
-      {
-        type: {
-          clickedBy: { type: String },
-          clickedAt: { type: Date },
-        },
-      },
-    ],
-    heart: [
-      {
-        type: {
-          clickedBy: { type: String },
-          clickedAt: { type: Date, default: Date.now },
-        },
-      },
-    ],
-    rocket: [
-      {
-        type: {
-          clickedBy: { type: String },
-          clickedAt: { type: Date, default: Date.now },
-        },
-      },
-    ],
-    coffee: [
-      {
-        type: {
-          clickedBy: { type: String },
-          clickedAt: { type: Date, default: Date.now },
-        },
-      },
-    ],
+  reactionsCount: {
+    thumbsUp: { type: Number, default: 0 },
+    heart: { type: Number, default: 0 },
+    wow: { type: Number, default: 0 },
+    rocket: { type: Number, default: 0 },
+    coffee: { type: Number, default: 0 },
   },
+  reactions: [{ type: Schema.Types.ObjectId, ref: "Reaction", default: [] }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
