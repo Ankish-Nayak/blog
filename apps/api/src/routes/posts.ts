@@ -1,37 +1,59 @@
 import express from "express";
 import { Request, Response } from "express";
-import { IPost, IReactions, Post, User, Reaction } from "models";
+import { IPost, Post, User, Reaction } from "models";
 import { authenticateJwt } from "../middlewares/auth";
 import { addReactionType } from "types";
-import { ObjectId } from "mongodb";
-import { Types } from "mongoose";
+import { Document, Types } from "mongoose";
+import { IncomingHttpHeaders } from "http2";
 
+interface MRequest extends Request {
+  headers: IncomingHttpHeaders | { userId: string; name: string };
+}
 export const router = express.Router();
 
-export const newPost = (posts: IPost[]) => {
-  // {reactions: _,...resPost} = post;
-  return posts;
-  // return posts.map((post) => {
-  //   const { reactions: _, ...resPost } = post;
-  //   return resPost;
-  // return {
-  //   title: post.title,
-  //   content: post.content,
-  //   createdAt: post.createdAt,
-  //   updatedAt: post.updatedAt,
-  //   reactions: {
-  //     thumbsUp: post.reactions.thumbsUp.length,
-  //     heart: post.reactions.heart.length,
-  //     rocket: post.reactions.rocket.length,
-  //     wow: post.reactions.wow.length,
-  //     coffee: post.reactions.coffee.length,
-  //   },
-  // };
-  // });
+export const newPost = async (
+  posts: (Document<unknown, {}, IPost> &
+    IPost & {
+      _id: Types.ObjectId;
+    })[],
+  userId: string,
+) => {
+  return await Promise.all(
+    posts.map(async (post) => {
+      return new Promise(async (res) => {
+        const reactions = await Reaction.find({
+          postId: post._id,
+          clickedBy: userId,
+        });
+        const clicked = {
+          thumbsUp: false,
+          wow: false,
+          rocket: false,
+          coffee: false,
+          heart: false,
+        };
+        reactions.forEach((reaction) => {
+          clicked[reaction.reactionType] = true;
+        });
+        res({
+          id: post._id,
+          userId: post.userId,
+          title: post.title,
+          content: post.content,
+          createdAt: post.createdAt,
+          updatedAt: post.updatedAt,
+          reactions: post.reactions,
+          clicked: clicked,
+          reactionsCount: post.reactionsCount,
+        });
+      });
+    }),
+  );
 };
 
 // get all posts and get by userId
-router.get("/", authenticateJwt, async (req: Request, res: Response) => {
+router.get("/", authenticateJwt, async (req: MRequest, res: Response) => {
+  const userId: string = req.headers.userId as string;
   if (typeof req.query.userId === "string") {
     try {
       const userId: string = req.query.userId;
@@ -40,7 +62,7 @@ router.get("/", authenticateJwt, async (req: Request, res: Response) => {
         const posts = await Post.find({ userId: existingUser._id });
         if (posts) {
           res.json({
-            posts: newPost(posts),
+            posts: newPost(posts, userId),
           });
         } else {
           res.status(402).json({ message: "posts dose not exists" });
@@ -63,10 +85,10 @@ router.get("/", authenticateJwt, async (req: Request, res: Response) => {
           userId: { $in: ids },
           title: { $regex: req.query.title, $options: "i" },
         });
-        return res.json({ posts: newPost(posts) });
+        return res.json({ posts: await newPost(posts, userId) });
       } else {
         const posts = await Post.find({ userId: { $in: ids } });
-        return res.json({ posts: newPost(posts) });
+        return res.json({ posts: await newPost(posts, userId) });
       }
     } catch (e) {
       console.log(e);
@@ -76,11 +98,14 @@ router.get("/", authenticateJwt, async (req: Request, res: Response) => {
     const posts = await Post.find({
       title: { $regex: req.query.title, $options: "i" },
     });
-    res.json({ posts: newPost(posts) });
+    res.json({ posts: await newPost(posts, userId) });
   } else {
     try {
       const posts = await Post.find({});
-      return res.json({ posts: newPost(posts), message: "updated new" });
+      return res.json({
+        posts: await newPost(posts, userId),
+        message: "updated new",
+      });
     } catch (e) {
       console.log(e);
 
@@ -104,7 +129,7 @@ router.get("/title/", authenticateJwt, async (req: Request, res: Response) => {
     }
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: "interna error" });
+    res.status(500).json({ message: "internal error" });
   }
 });
 
@@ -124,7 +149,8 @@ router.post("/", authenticateJwt, async (req: Request, res: Response) => {
 });
 
 // update post
-router.put("/:id", authenticateJwt, async (req: Request, res: Response) => {
+router.put("/:id", authenticateJwt, async (req: MRequest, res: Response) => {
+  const userId: string = req.headers.userId as string;
   try {
     console.log(req.body);
     const id = req.params.id;
@@ -139,7 +165,7 @@ router.put("/:id", authenticateJwt, async (req: Request, res: Response) => {
       if (updatedPost) {
         res.json({
           id: updatedPost._id,
-          updatedPost: updatedPost,
+          updatedPost: (await newPost([updatedPost], userId))[0],
           message: "post updated",
         });
       } else {

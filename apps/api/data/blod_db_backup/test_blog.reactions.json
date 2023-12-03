@@ -1,0 +1,240 @@
+[{
+  "_id": {
+    "$oid": "656b3e68822fd3b23449fbd8"
+  },
+  "postId": {
+    "$oid": "6562e3ad8c246596723e4780"
+  },
+  "clickedBy": {
+    "$oid": "6564b90e082494272812ad98"
+  },
+  "clickedAt": {
+    "$date": "2023-12-02T14:25:44.687Z"
+  },
+  "reactionType": "heart",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "656b70b2607c2d359a5bf2a0"
+  },
+  "postId": {
+    "$oid": "6562e3ad8c246596723e47df"
+  },
+  "clickedBy": {
+    "$oid": "6564b90e082494272812ad98"
+  },
+  "clickedAt": {
+    "$date": "2023-12-02T18:00:18.928Z"
+  },
+  "reactionType": "thumbsUp",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "656c24f8b3178a03ee98e82d"
+  },
+  "postId": {
+    "$oid": "6562e3ad8c246596723e47df"
+  },
+  "clickedBy": {
+    "$oid": "6564b90e082494272812ad98"
+  },
+  "clickedAt": {
+    "$date": "2023-12-03T06:49:28.421Z"
+  },
+  "reactionType": "heart",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "656c25c271d2c760db45e0a3"
+  },
+  "postId": {
+    "$oid": "6562e3ad8c246596723e47df"
+  },
+  "clickedBy": {
+    "$oid": "6564b90e082494272812ad98"
+  },
+  "clickedAt": {
+    "$date": "2023-12-03T06:52:50.819Z"
+  },
+  "reactionType": "wow",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "656c265271d2c760db45e0aa"
+  },
+  "postId": {
+    "$oid": "6562e3ad8c246596723e47bf"
+  },
+  "clickedBy": {
+    "$oid": "6564b90e082494272812ad98"
+  },
+  "clickedAt": {
+    "$date": "2023-12-03T06:55:14.987Z"
+  },
+  "reactionType": "thumbsUp",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "656c271671d2c760db45e23b"
+  },
+  "postId": {
+    "$oid": "6562e3ad8c246596723e47c9"
+  },
+  "clickedBy": {
+    "$oid": "6564b90e082494272812ad98"
+  },
+  "clickedAt": {
+    "$date": "2023-12-03T06:58:30.146Z"
+  },
+  "reactionType": "thumbsUp",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "656c2938e85ce8aa26d2e999"
+  },
+  "postId": {
+    "$oid": "6562e3ad8c246596723e47d9"
+  },
+  "clickedBy": {
+    "$oid": "6564b90e082494272812ad98"
+  },
+  "clickedAt": {
+    "$date": "2023-12-03T07:07:36.991Z"
+  },
+  "reactionType": "thumbsUp",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "656c2990b54d11cd98ea6af2"
+  },
+  "postId": {
+    "$oid": "6562e3ad8c246596723e47dc"
+  },
+  "clickedBy": {
+    "$oid": "6564b90e082494272812ad98"
+  },
+  "clickedAt": {
+    "$date": "2023-12-03T07:09:04.239Z"
+  },
+  "reactionType": "thumbsUp",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "656c2999b54d11cd98ea6aff"
+  },
+  "postId": {
+    "$oid": "6562e3ad8c246596723e47dd"
+  },
+  "clickedBy": {
+    "$oid": "6564b90e082494272812ad98"
+  },
+  "clickedAt": {
+    "$date": "2023-12-03T07:09:13.752Z"
+  },
+  "reactionType": "heart",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "656c29c4b54d11cd98ea6b06"
+  },
+  "postId": {
+    "$oid": "6562e3ad8c246596723e47c2"
+  },
+  "clickedBy": {
+    "$oid": "6564b90e082494272812ad98"
+  },
+  "clickedAt": {
+    "$date": "2023-12-03T07:09:56.522Z"
+  },
+  "reactionType": "coffee",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "656c29d9b54d11cd98ea6b0d"
+  },
+  "postId": {
+    "$oid": "6562e3ad8c246596723e4797"
+  },
+  "clickedBy": {
+    "$oid": "6564b90e082494272812ad98"
+  },
+  "clickedAt": {
+    "$date": "2023-12-03T07:10:17.001Z"
+  },
+  "reactionType": "coffee",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "656c2ab6b54d11cd98ea6f9d"
+  },
+  "postId": {
+    "$oid": "6562e3ad8c246596723e47da"
+  },
+  "clickedBy": {
+    "$oid": "6564b90e082494272812ad98"
+  },
+  "clickedAt": {
+    "$date": "2023-12-03T07:13:58.325Z"
+  },
+  "reactionType": "thumbsUp",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "656c2d64d51817af2091619a"
+  },
+  "postId": {
+    "$oid": "6562e3ad8c246596723e47dc"
+  },
+  "clickedBy": {
+    "$oid": "6564b90e082494272812ad98"
+  },
+  "clickedAt": {
+    "$date": "2023-12-03T07:25:24.104Z"
+  },
+  "reactionType": "heart",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "656c6085d4b24afd93a63b91"
+  },
+  "postId": {
+    "$oid": "6562e3ad8c246596723e47df"
+  },
+  "clickedBy": {
+    "$oid": "6564b90e082494272812ad98"
+  },
+  "clickedAt": {
+    "$date": "2023-12-03T11:03:33.298Z"
+  },
+  "reactionType": "rocket",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "656c608ed4b24afd93a63b98"
+  },
+  "postId": {
+    "$oid": "6562e3ad8c246596723e47df"
+  },
+  "clickedBy": {
+    "$oid": "6564b90e082494272812ad98"
+  },
+  "clickedAt": {
+    "$date": "2023-12-03T11:03:42.309Z"
+  },
+  "reactionType": "coffee",
+  "__v": 0
+}]
