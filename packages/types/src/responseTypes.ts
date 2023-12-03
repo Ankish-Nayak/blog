@@ -20,6 +20,13 @@ export interface IPost {
   reactionsCount: IReactionsCount;
   createdAt: Date;
   updatedAt: Date;
+  clicked: {
+    thumbsUp: boolean;
+    heart: boolean;
+    wow: boolean;
+    rocket: boolean;
+    coffee: boolean;
+  };
 }
 
 export interface IgetPosts {
@@ -61,5 +68,3 @@ export interface IaddReactions {
   id: string;
   message: string;
 }
-
-export * from "./src/index";
