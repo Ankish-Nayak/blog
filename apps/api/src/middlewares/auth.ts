@@ -17,7 +17,7 @@ export const authenticateJwt = async (
   if (typeof token === "string") {
     jwt.verify(token, secret, (err, payload) => {
       if (err) {
-        res.status(403).json({ message: "jwt error" });
+        return res.status(403).json({ message: "jwt error" });
       }
       if (!payload || typeof payload === "string") {
         return res.status(403).json({ message: "type error" });

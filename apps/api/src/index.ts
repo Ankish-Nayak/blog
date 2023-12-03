@@ -1,6 +1,7 @@
 import express from "express";
 import { router as userRouter } from "./routes/users";
 import { router as postRouter } from "./routes/posts";
+import { router as reactionRouter } from "./routes/reactions";
 import { run as connectToDb } from "models";
 import { config } from "dotenv";
 import cors from "cors";
@@ -16,7 +17,7 @@ app.use(
 app.use(express.json());
 app.use("/users", userRouter);
 app.use("/posts", postRouter);
-
+app.use("/reactions", reactionRouter);
 connectToDb()
   .then(() => {
     app.listen(process.env.PORT || 3000, () => {

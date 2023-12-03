@@ -16,7 +16,7 @@ router.get("/me", authenticateJwt, async (req: Request, res: Response) => {
   if (typeof name === "undefined") {
     res.status(403).json({ message: "user not logged in" });
   } else {
-    res.json({ name, message: "found" });
+    res.json({ id: req.headers["userId"], name, message: "found" });
   }
 });
 
@@ -51,7 +51,11 @@ router.post("/login", async (req: Request, res: Response) => {
       await existingUser.save();
       const cookies = new Cookies(req, res);
       cookies.set("user-token", token);
-      res.json({ message: "user loggedIn", name: existingUser.name });
+      res.json({
+        message: "user loggedIn",
+        name: existingUser.name,
+        id: existingUser._id,
+      });
     } else {
       res.status(403).json({ message: "user not found" });
     }
@@ -87,7 +91,11 @@ router.post("/signup", async (req: Request, res: Response) => {
         cookies.set("user-token", token);
         newUser.loginSessions.push(token);
         await newUser.save();
-        res.json({ message: "user creaed", name: newUser.name });
+        res.json({
+          message: "user creaed",
+          name: newUser.name,
+          id: newUser._id,
+        });
       } else {
         res.status(402).json({ message: "failed to create" });
       }
@@ -147,7 +155,7 @@ router.post(
             );
             updatedUser.loginSessions.push(token);
             await updatedUser.save();
-            res.json({ message: "profile updated", name });
+            res.json({ message: "profile updated", name, id: updatedUser._id });
           } else {
             res.status(402).json({ message: "failed to update" });
           }

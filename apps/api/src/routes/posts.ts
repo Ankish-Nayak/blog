@@ -1,9 +1,34 @@
 import express from "express";
 import { Request, Response } from "express";
-import { IPost, IReactions, Post, User } from "models";
+import { IPost, IReactions, Post, User, Reaction } from "models";
 import { authenticateJwt } from "../middlewares/auth";
+import { addReactionType } from "types";
+import { ObjectId } from "mongodb";
+import { Types } from "mongoose";
 
 export const router = express.Router();
+
+export const newPost = (posts: IPost[]) => {
+  // {reactions: _,...resPost} = post;
+  return posts;
+  // return posts.map((post) => {
+  //   const { reactions: _, ...resPost } = post;
+  //   return resPost;
+  // return {
+  //   title: post.title,
+  //   content: post.content,
+  //   createdAt: post.createdAt,
+  //   updatedAt: post.updatedAt,
+  //   reactions: {
+  //     thumbsUp: post.reactions.thumbsUp.length,
+  //     heart: post.reactions.heart.length,
+  //     rocket: post.reactions.rocket.length,
+  //     wow: post.reactions.wow.length,
+  //     coffee: post.reactions.coffee.length,
+  //   },
+  // };
+  // });
+};
 
 // get all posts and get by userId
 router.get("/", authenticateJwt, async (req: Request, res: Response) => {
@@ -14,7 +39,9 @@ router.get("/", authenticateJwt, async (req: Request, res: Response) => {
       if (existingUser) {
         const posts = await Post.find({ userId: existingUser._id });
         if (posts) {
-          res.json({ posts });
+          res.json({
+            posts: newPost(posts),
+          });
         } else {
           res.status(402).json({ message: "posts dose not exists" });
         }
@@ -36,10 +63,10 @@ router.get("/", authenticateJwt, async (req: Request, res: Response) => {
           userId: { $in: ids },
           title: { $regex: req.query.title, $options: "i" },
         });
-        res.json({ posts });
+        return res.json({ posts: newPost(posts) });
       } else {
         const posts = await Post.find({ userId: { $in: ids } });
-        res.json({ posts });
+        return res.json({ posts: newPost(posts) });
       }
     } catch (e) {
       console.log(e);
@@ -49,11 +76,11 @@ router.get("/", authenticateJwt, async (req: Request, res: Response) => {
     const posts = await Post.find({
       title: { $regex: req.query.title, $options: "i" },
     });
-    res.json({ posts });
+    res.json({ posts: newPost(posts) });
   } else {
     try {
       const posts = await Post.find({});
-      return res.json({ posts: posts, message: "updated new" });
+      return res.json({ posts: newPost(posts), message: "updated new" });
     } catch (e) {
       console.log(e);
 
@@ -164,26 +191,100 @@ router.delete("/:id", authenticateJwt, async (req: Request, res: Response) => {
 });
 
 // add reactions to post
+
 router.patch("/:id", authenticateJwt, async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    const reactions: IReactions = req.body;
+    const parsedInputs = addReactionType.safeParse(req.body);
+    if (!parsedInputs.success) {
+      return res.status(411).json({ error: parsedInputs.error });
+    }
+    const { clickedBy, postId, reactionType } = parsedInputs.data;
     const existingPost = await Post.findOne({ _id: id });
     if (existingPost) {
-      const updatedPost = await Post.findOneAndUpdate(
-        { _id: id },
-        {
-          reactions,
-        },
-        {
-          new: true,
-        },
-      );
-      if (updatedPost) {
-        res.json({ id: updatedPost._id, message: "reactions added" });
+      const existingReaction = await Reaction.findOne({ postId, reactionType });
+      if (existingReaction) {
+        const updatedPost = await Post.findOneAndUpdate(
+          { _id: postId },
+          {
+            $pull: {
+              reactions: existingReaction._id,
+            },
+          },
+          {
+            new: true,
+          },
+        );
+        if (updatedPost) {
+          updatedPost.reactionsCount[reactionType]--;
+          await updatedPost.save();
+        }
+
+        await Reaction.findOneAndDelete({
+          postId,
+          reactionType,
+        });
+        const reactions = await Reaction.find({
+          postId,
+          clickedBy,
+        });
+        const clicked = {
+          thumbsUp: false,
+          wow: false,
+          rocket: false,
+          coffee: false,
+          heart: false,
+        };
+        reactions.forEach((reaction) => {
+          clicked[reaction.reactionType] = true;
+        });
+        res.json({
+          message: "reaction Removed",
+          added: false,
+          reactionsCount: updatedPost?.reactionsCount,
+          clicked,
+        });
       } else {
-        res.status(402).json({ message: "failed to add reactions" });
+        const newReaction = await Reaction.create({
+          clickedBy,
+          clickedAt: Date.now(),
+          postId,
+          reactionType,
+        });
+        const existingPost = await Post.findOne({ _id: postId });
+        if (existingPost && newReaction) {
+          if (existingPost.reactions) {
+            existingPost.reactions.push(newReaction._id);
+          } else {
+            existingPost.reactions = [newReaction._id];
+          }
+          existingPost.reactionsCount[reactionType]++;
+          await existingPost.save();
+          const reactions = await Reaction.find({
+            postId,
+            clickedBy,
+          });
+          const clicked = {
+            thumbsUp: false,
+            wow: false,
+            rocket: false,
+            coffee: false,
+            heart: false,
+          };
+          reactions.forEach((reaction) => {
+            clicked[reaction.reactionType] = true;
+          });
+          res.json({
+            added: true,
+            reactionsCount: existingPost.reactionsCount,
+            clicked,
+          });
+        } else {
+          res.json({ added: true, message: "post dose not exists" });
+        }
       }
+    } else {
+      res.status(402).json({ message: "invalid postId" });
     }
   } catch (e) {
     console.log(e);
