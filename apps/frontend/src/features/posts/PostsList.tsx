@@ -29,6 +29,7 @@ const PostsList = () => {
     }
     content = array;
   } else if (isSuccess) {
+    console.log("posts", posts);
     const orderedPosts = posts.ids;
     content = orderedPosts.map((id) => (
       <div style={{ margin: "5px" }}>

@@ -17,6 +17,7 @@ export const run = async (): Promise<boolean> => {
       if (typeof dbName === "undefined") {
         throw new Error("database name not found");
       }
+      console.log(url);
       await connect(url, {
         dbName: dbName,
       });

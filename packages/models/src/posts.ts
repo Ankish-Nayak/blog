@@ -1,9 +1,9 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Types } from "mongoose";
 
 export interface IPost {
   title: string;
   content: string;
-  userId: Schema.Types.ObjectId;
+  userId: Types.ObjectId;
   reactionsCount: {
     thumbsUp: number;
     heart: number;
@@ -11,22 +11,22 @@ export interface IPost {
     rocket: number;
     coffee: number;
   };
-  reactions: Schema.Types.ObjectId[];
+  reactions: Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface IReactions {
-  thumbsUp: Schema.Types.ObjectId[];
-  wow: Schema.Types.ObjectId[];
-  heart: Schema.Types.ObjectId[];
-  rocket: Schema.Types.ObjectId[];
-  coffee: Schema.Types.ObjectId[];
-}
-export interface IClick {
-  clickedBy: string;
-  clickedAt: Date;
-}
+// export interface IReactions {
+//   thumbsUp: Schema.Types.ObjectId[];
+//   wow: Schema.Types.ObjectId[];
+//   heart: Schema.Types.ObjectId[];
+//   rocket: Schema.Types.ObjectId[];
+//   coffee: Schema.Types.ObjectId[];
+// }
+// export interface IClick {
+//   clickedBy: string;
+//   clickedAt: Date;
+// }
 const postSchema = new Schema<IPost>({
   title: { type: String, required: true },
   content: { type: String, required: true },

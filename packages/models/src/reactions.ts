@@ -1,9 +1,9 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Types } from "mongoose";
 
 interface IReactionSchema {
-  postId: Schema.Types.ObjectId;
+  postId: Types.ObjectId;
   clickedAt: Date;
-  clickedBy: Schema.Types.ObjectId;
+  clickedBy: Types.ObjectId;
   reactionType: "thumbsUp" | "heart" | "wow" | "coffee" | "rocket";
 }
 

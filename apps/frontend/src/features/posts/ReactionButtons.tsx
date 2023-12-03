@@ -2,10 +2,7 @@ import { Button, Stack, Typography } from "@mui/material";
 import { IPost, IReaction, useAddReactionMutation } from "./postsSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import { addReactionParams } from "types";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { BASE_URL } from "../api/apiSlice";
+import { useState } from "react";
 
 const reactionEmoji = {
   thumbsUp: "👍",
@@ -17,7 +14,6 @@ const reactionEmoji = {
 
 const ReactionButtons = ({ post }: { post: IPost }) => {
   const loggedInUser = useSelector((state: RootState) => state.auth);
-  // const {data: user} = useMeQuery("");
   const [addReaction] = useAddReactionMutation();
   const [reactions, setReactions] = useState<{
     thumbsUp: boolean;
@@ -26,11 +22,7 @@ const ReactionButtons = ({ post }: { post: IPost }) => {
     coffee: boolean;
     heart: boolean;
   }>({
-    thumbsUp: false,
-    wow: false,
-    rocket: false,
-    coffee: false,
-    heart: false,
+    ...post.clicked,
   });
   const [reactionsCount, setReactionsCount] = useState<{
     thumbsUp: number;
@@ -38,75 +30,42 @@ const ReactionButtons = ({ post }: { post: IPost }) => {
     rocket: number;
     coffee: number;
     heart: number;
-  }>({
-    thumbsUp: 0,
-    wow: 0,
-    rocket: 0,
-    coffee: 0,
-    heart: 0,
-  });
-
-  const init = async () => {
-    try {
-      const res = await axios.get(
-        `${BASE_URL}/reactions/?postId=${post.id}&loggedInUserId=${loggedInUser.id}`,
-      );
-      const data = res.data;
-      if (data) {
-        // console.log(data);
-        setReactions({
-          heart: data.heart,
-          thumbsUp: data.thumbsUp,
-          coffee: data.coffee,
-          rocket: data.rocket,
-          wow: data.wow,
-        });
-        setReactionsCount({
-          ...data.reactionsCount,
-        });
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  }>({ ...post.reactionsCount });
 
   if (post.title === "new Post") console.log(reactions);
 
-  useEffect(() => {
-    init();
-  }, []);
-
-  const handleAddReaction = async (
-    reactionType: IReaction,
-    // reactionCount: number,
-  ) => {
+  const handleAddReaction = async (reactionType: IReaction) => {
     if (loggedInUser.id === null) {
       throw new Error("not logged in");
     }
+
     console.log(reactionType);
-    // setReactions((prev) => {
-    //   const d = prev;
-    //   d[reactionType] = !prev[reactionType];
-    //   return d;
-    //   // return {
-    //   //   ...prev,
-    //   //   reactionType: !prev[reactionType],
-    //   // };
-    // });
     try {
-      const data: addReactionParams = {
+      const data = {
         reactionType,
         clickedBy: loggedInUser.id,
         postId: post.id,
+        reactionsCount,
+        clicked: reactions,
       };
       console.log(reactionType);
-
-      // reactions[reactionType] ? reactionCount++ : reactionCount--;
+      // setReactions((prev) => {
+      //   return {
+      //     ...prev,
+      //     [reactionType]: prev[reactionType] ? true : false,
+      //   };
+      // });
+      // setReactionsCount((prev) => {
+      //   return {
+      //     ...prev,
+      //     [reactionType]: reactions[reactionType]
+      //       ? prev[reactionType] - 1
+      //       : prev[reactionType] + 1,
+      //   };
+      // });
       const res = await addReaction(data).unwrap();
-      setReactionsCount({
-        ...res.reactionsCount,
-      });
-      console.log("res", res);
+      setReactionsCount({ ...res.reactionsCount });
+      // console.log("res", res);
       setReactions({
         ...res.clicked,
       });
