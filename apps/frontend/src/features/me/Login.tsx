@@ -75,7 +75,7 @@ const Login = ({
           password,
         };
         const res = await login(data).unwrap();
-        dispatch(setCredentials({ user: res.name }));
+        dispatch(setCredentials({ user: res.name, id: res.id }));
         if (isSuccess) {
           console.log(res);
         } else if (isLoading) {

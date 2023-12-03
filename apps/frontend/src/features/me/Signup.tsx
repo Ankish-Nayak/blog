@@ -82,7 +82,7 @@ const Signup = ({
           password,
         };
         const res = await signup(data).unwrap();
-        dispatch(setCredentials({ user: res.name }));
+        dispatch(setCredentials({ user: res.name, id: res.id }));
         console.log(res);
         if (isSuccess) {
           navigate("/");

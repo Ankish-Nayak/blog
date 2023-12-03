@@ -24,7 +24,7 @@ function ResponsiveAppBar() {
       if (location.pathname !== "/posts") {
         navigate("posts/");
       }
-      dispatch(setCredentials({ user: data.name }));
+      dispatch(setCredentials({ user: data.name, id: data.id }));
     }
     if (isError) {
       navigate("/");

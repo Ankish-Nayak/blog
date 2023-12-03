@@ -10,7 +10,6 @@ import TitleSearch from "../TitleSearch";
 import CustomMenu from "./CustomMenu";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useMeQuery } from "../authApiSlice";
 interface IPage {
   name: string;
   navigateTo: string;

@@ -1,9 +1,14 @@
 import { loginParams, signUpParams } from "types";
 import { apiSlice } from "../api/apiSlice";
 
+interface ILogin {
+  id: string;
+  name: string;
+}
+
 const authSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<{ name: string; message: string }, loginParams>({
+    login: builder.mutation<ILogin, loginParams>({
       query: (data) => ({
         url: "/users/login",
         method: "POST",
@@ -11,13 +16,9 @@ const authSlice = apiSlice.injectEndpoints({
           ...data,
         },
       }),
-      transformResponse(res: { name: string; message: string }) {
-        return res;
-      },
-
       invalidatesTags: [{ type: "Post", id: "LIST" }],
     }),
-    signup: builder.mutation<{ name: string; message: string }, signUpParams>({
+    signup: builder.mutation<ILogin, signUpParams>({
       query: (data) => ({
         url: "/users/signup",
         method: "POST",
@@ -25,27 +26,21 @@ const authSlice = apiSlice.injectEndpoints({
           ...data,
         },
       }),
-      transformResponse(res: { name: string; message: string }) {
-        return res;
-      },
     }),
     logout: builder.mutation<{ message: string }, string>({
       query: () => ({
         url: "/users/logout",
         method: "POST",
       }),
-      transformResponse(res: { name: string; message: string }) {
-        return res;
-      },
       invalidatesTags: [{ type: "Post", id: "LIST" }],
     }),
-    me: builder.query<{ message: string; name: string }, string>({
+    me: builder.query<ILogin, string>({
       query: () => "/users/me",
       providesTags: ["User"],
     }),
 
     updateProfile: builder.mutation<
-      { message: string; name: string },
+      ILogin,
       { name: string; email: string; password?: string }
     >({
       query: (data) => ({

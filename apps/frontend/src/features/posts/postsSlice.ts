@@ -24,7 +24,13 @@ export interface IPost {
   content: string;
   date: string;
   userId?: string;
-  reactions: IReactions;
+  reactionsCount: {
+    thumbsUp: number;
+    heart: number;
+    wow: number;
+    rocket: number;
+    coffee: number;
+  };
 }
 
 const newPostData = (data: IgetPost) => {
@@ -36,7 +42,7 @@ const newPostData = (data: IgetPost) => {
     content: oldPost.content,
     // @ts-expect-error depends on backend
     date: oldPost.updatedAt as string,
-    reactions: oldPost.reactions,
+    reactionsCount: oldPost.reactionsCount,
   };
 };
 
@@ -145,46 +151,53 @@ export const postsApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (_, __, { id }) => [{ type: "Post", id }],
     }),
     addReaction: builder.mutation<
-      void,
+      {
+        message: string;
+        added: boolean;
+      },
       {
         postId: string;
-        reactions: IReactions;
+        clickedBy: string;
+        reactionType: string;
+        // reactions: IReactions;
       }
     >({
-      query: ({ postId, reactions }) => ({
+      query: ({ postId, clickedBy, reactionType }) => ({
         url: `/posts/${postId}`,
         method: "PATCH",
         body: {
-          ...reactions,
+          postId,
+          clickedBy,
+          reactionType,
         },
       }),
-      async onQueryStarted(
-        { postId, reactions },
-        { dispatch, queryFulfilled },
-      ) {
-        const patchResult = dispatch(
-          postsApiSlice.util.updateQueryData(
-            "getPosts",
-            { title: undefined, name: undefined },
-            (draft) => {
-              const post = draft.entities[postId];
-              if (post) post.reactions = reactions;
-            },
-          ),
-        );
-        const patchResult2 = dispatch(
-          postsApiSlice.util.updateQueryData("getPost", "getPost", (draft) => {
-            const post = draft;
-            if (post) post.reactions = reactions;
-          }),
-        );
-        try {
-          await queryFulfilled;
-        } catch (e) {
-          patchResult.undo();
-          patchResult2.undo();
-        }
-      },
+      // async onQueryStarted(
+      //   { postId, reactionType, reactionCount },
+      //   { dispatch, queryFulfilled },
+      // ) {
+      //   const patchResult = dispatch(
+      //     postsApiSlice.util.updateQueryData(
+      //       "getPosts",
+      //       { title: undefined, name: undefined },
+      //       (draft) => {
+      //         const post = draft.entities[postId];
+      //         if (post) post.reactionsCount[reactionType] = reactionCount;
+      //       },
+      //     ),
+      //   );
+      //   const patchResult2 = dispatch(
+      //     postsApiSlice.util.updateQueryData("getPost", "getPost", (draft) => {
+      //       const post = draft;
+      //       if (post) post.reactionsCount[reactionType] = reactionCount;
+      //     }),
+      //   );
+      //   try {
+      //     await queryFulfilled;
+      //   } catch (e) {
+      //     patchResult.undo();
+      //     patchResult2.undo();
+      //   }
+      // },
     }),
   }),
 });

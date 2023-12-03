@@ -3,10 +3,12 @@ import { RootState } from "../../app/store";
 
 export interface IAuth {
   user: string | null;
+  id: string | null;
 }
 
 const initialState: IAuth = {
   user: null,
+  id: null,
 };
 
 const authSlice = createSlice({
@@ -14,11 +16,13 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action: PayloadAction<IAuth>) => {
-      const { user } = action.payload;
+      const { user, id } = action.payload;
       state.user = user;
+      state.id = id;
     },
     logOut: (state) => {
       state.user = null;
+      state.id = null;
     },
   },
 });

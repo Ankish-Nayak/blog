@@ -17,7 +17,7 @@ const CustomMenu = () => {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    if (data) dispatch(setCredentials({ user: data.name }));
+    if (data) dispatch(setCredentials({ user: data.name, id: data.id }));
   }, [data, dispatch]);
   const [show, setShow] = useState(false);
 
