@@ -4,7 +4,7 @@ export interface IUser {
   email?: string;
   posts: string[];
 }
-export interface IReactions {
+export interface IReactionsCount {
   thumbsUp: number;
   wow: number;
   heart: number;
@@ -17,7 +17,7 @@ export interface IPost {
   _id: string;
   content: string;
   userId: string;
-  reactions: IReactions;
+  reactionsCount: IReactionsCount;
   createdAt: Date;
   updatedAt: Date;
 }
