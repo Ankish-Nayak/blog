@@ -10,6 +10,7 @@ import { RootState } from "../../app/store";
 export interface IUser {
   id: string;
   name: string;
+  email: string;
 }
 
 const usersAdapter = createEntityAdapter<IUser>({
@@ -27,6 +28,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
           return {
             id: user._id,
             name: user.name,
+            email: user.email,
           };
         });
         return usersAdapter.setAll(initialState, loadedUsers);
@@ -35,7 +37,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         return typeof res === "undefined"
           ? [{ type: "User", id: "LIST" }]
           : [
-              { type: "User", id: "List" },
+              { type: "User", id: "LIST" },
               ...res.ids.map((id) => ({ type: "User" as const, id })),
             ];
       },
@@ -46,6 +48,7 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         return {
           id: res.user._id,
           name: res.user.name,
+          email: res.user.email,
         };
       },
     }),

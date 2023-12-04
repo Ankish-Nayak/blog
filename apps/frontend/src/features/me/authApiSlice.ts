@@ -41,15 +41,62 @@ const authSlice = apiSlice.injectEndpoints({
 
     updateProfile: builder.mutation<
       ILogin,
-      { name: string; email: string; password?: string }
+      { userId: string; name: string; email: string; password?: string }
     >({
-      query: (data) => ({
+      query: ({ name, email, password }) => ({
         url: "/users/profile",
         method: "POST",
         body: {
-          ...data,
+          name,
+          email,
+          password,
         },
       }),
+      invalidatesTags: (res) => {
+        return res ? [{ type: "User" as const, id: res.id }] : [];
+      },
+      // async onQueryStarted(
+      //   { userId, name, email },
+      //   { dispatch, queryFulfilled },
+      // ) {
+      //   const patch = dispatch(
+      //     usersApiSlice.util.updateQueryData(
+      //       "getUsers",
+      //       "blahblah",
+      //       (draft) => {
+      //         const user = draft.entities[userId];
+      //         // if(typeof draft.entities[userId] !== 'undefined'){
+      //         //   draft.entities[userId].name = name;
+      //         //   draft.entities[userId].email = email;
+      //         // }
+      //         if (user) {
+      //           user.name = name;
+      //           user.email = email;
+      //         }
+      //         draft.entities[userId] = user;
+      //         // user.name = name;
+      //         // user.email = email;
+      //       },
+      //     ),
+      //   );
+      //   //   postsApiSlice.util.updateQueryData(
+      //   //     "getPosts",
+      //   //     { title: undefined, name: undefined },
+      //   //     (draft) => {
+      //   //       const post = draft.entities[postId];
+      //   //       if (post) {
+      //   //         post.reactionsCount = reactionsCount;
+      //   //         post.clicked = clicked;
+      //   //       }
+      //   //     },
+      //   //   ),
+      //   try {
+      //     await queryFulfilled;
+      //   } catch (e) {
+      //     patch.undo();
+      //     console.log(e);
+      //   }
+      // },
     }),
     getProfile: builder.query<{ name: string; email: string }, string>({
       query: () => "/users/profile",

@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logOut, setCredentials } from "../authSlice";
 import { useLogoutMutation, useMeQuery } from "../authApiSlice";
+import Profile from "../../user/Profile/ProfileDialog";
+import UpdateProfileDialog from "../../user/UpdateProfile/UpdateProfileDialog";
 
 const CustomMenu = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -20,6 +22,8 @@ const CustomMenu = () => {
     if (data) dispatch(setCredentials({ user: data.name, id: data.id }));
   }, [data, dispatch]);
   const [show, setShow] = useState(false);
+  const [openProfile, setOpenProfile] = useState<boolean>(false);
+  const [openUpdateProfile, setOpenUpdateProfile] = useState<boolean>(false);
 
   const navigate = useNavigate();
   const settings: {
@@ -28,11 +32,15 @@ const CustomMenu = () => {
   }[] = [
     {
       name: "Profile",
-      action: () => navigate("/profile"),
+      action: () => {
+        setOpenProfile(true);
+      },
     },
     {
       name: "UpdateProfile",
-      action: () => navigate("/UpdateProfile"),
+      action: () => {
+        setOpenUpdateProfile(true);
+      },
     },
     {
       name: "Logout",
@@ -63,9 +71,13 @@ const CustomMenu = () => {
     setShow(false);
     setAnchorElUser(null);
   };
-
   return (
     <Box sx={{ flexGrow: 0 }}>
+      <UpdateProfileDialog
+        show={openUpdateProfile}
+        setOpenUpdateProfile={setOpenUpdateProfile}
+      />
+      <Profile show={openProfile} setOpenProfile={setOpenProfile} />
       {isLoading === false && isMeLoading === false && (
         <Tooltip title="Open settings">
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

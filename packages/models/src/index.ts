@@ -3,6 +3,7 @@ import { config } from "dotenv";
 export * from "./posts";
 export * from "./users";
 export * from "./reactions";
+export * from "./profilePictures";
 
 config();
 

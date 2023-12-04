@@ -7,8 +7,6 @@ import EditPostForm from "./features/posts/EditPostForm";
 import UsersList from "./features/users/UsersList";
 import UserPage from "./features/users/UserPage";
 import AddPostForm from "./features/posts/AddPostForm";
-import Signup from "./features/me/Signup";
-import Login from "./features/me/Login";
 import HomePage from "./components/HomePage";
 
 function App() {
@@ -16,8 +14,6 @@ function App() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<HomePage />} />
-        <Route path="signup" element={<Signup />} />
-        <Route path="login" element={<Login />} />
         <Route path={"posts"} element={<PostsList />} />
 
         <Route path="post">
@@ -29,6 +25,7 @@ function App() {
         <Route path="users">
           <Route index element={<UsersList />} />
           <Route path=":userId" element={<UserPage />} />
+          {/* <Route path="profile" element={<Profile />} /> */}
         </Route>
         {/* catch all the components with 404  */}
         <Route path="*" element={<Navigate to="/" replace />}></Route>

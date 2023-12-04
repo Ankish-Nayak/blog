@@ -12,8 +12,8 @@ const userApiSlice = apiSlice.injectEndpoints({
           ...data,
         },
       }),
-      transformResponse(res: { name: string; message: string }) {
-        setCredentials({ user: res.name });
+      transformResponse(res: { name: string; message: string; id: string }) {
+        setCredentials({ user: res.name, id: res.id });
         return res;
       },
     }),

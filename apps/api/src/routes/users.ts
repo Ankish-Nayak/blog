@@ -1,11 +1,27 @@
 import express, { Request, Response } from "express";
+import fs from "fs";
 import Cookies from "cookies";
 import jwt from "jsonwebtoken";
-import { loginTypes, signUpTypes } from "types";
+import { loginTypes, signUpTypes, updateProfileTypes } from "types";
 import { Post, User } from "models";
 import { authenticateJwt } from "../middlewares/auth";
 import { config } from "dotenv";
 import { refreshLoginSession } from "../helpers/removeExpiryToken";
+import multer from "multer";
+import { fstat } from "fs";
+import path from "path";
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "../../data/"));
+  },
+  filename: (req, file, cb) => {
+    cb(
+      null,
+      file.originalname + "-" + Date.now() + path.extname(file.originalname),
+    );
+  },
+});
+const upload = multer({ storage });
 config();
 export const router = express.Router();
 
@@ -106,6 +122,19 @@ router.post("/signup", async (req: Request, res: Response) => {
   }
 });
 
+router.post(
+  "/uploadProfile",
+  upload.single("avatar"),
+  async (req: Request, res: Response) => {
+    if (req.file) {
+      console.log("req.file", req.file);
+      res.json({ message: "file uploaded" });
+    } else {
+      res.status(403).json({ message: "send file" });
+    }
+  },
+);
+
 // update profile
 router.post(
   "/profile",
@@ -117,11 +146,11 @@ router.post(
       console.log("secret not found");
       return res.status(500).json({ message: "internal error" });
     }
-    const parsedInput = signUpTypes.safeParse(req.body);
+    const parsedInput = updateProfileTypes.safeParse(req.body);
     if (!parsedInput.success) {
       return res.status(411).json({ error: parsedInput.error });
     }
-    const { name, email, password } = parsedInput.data;
+    const { name, email } = parsedInput.data;
     try {
       const existingUser = await User.findOne({ _id: userId });
       if (existingUser) {
@@ -138,7 +167,6 @@ router.post(
             {
               name,
               email,
-              password,
             },
             { new: true },
           );
@@ -235,6 +263,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     const id = req.params.id;
     const existingUser = await User.findOne({ _id: id });
     if (existingUser) {
+      console.log(existingUser);
       res.json({ user: existingUser });
     } else {
       res.status(403).json({ message: "User not found" });
