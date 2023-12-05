@@ -25,8 +25,6 @@ const Login = ({
   const [password, setPassword] = useState<string>("");
   const dispatch = useDispatch();
 
-  // error state.
-
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -60,7 +58,6 @@ const Login = ({
           });
         });
         rej(false);
-        // console.log(parsedData.error);
       } else {
         res(true);
       }

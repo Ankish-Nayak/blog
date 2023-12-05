@@ -29,6 +29,18 @@ export interface IPost {
   };
 }
 
+export interface IPhoto {
+  data: {
+    type: string;
+    data: Buffer;
+  };
+  contentType: string;
+}
+
+export interface IgetProfilePicture {
+  photo: IPhoto;
+}
+
 export interface IgetPosts {
   posts: IPost[];
   message: string;

@@ -12,7 +12,12 @@ export interface IProfilePicture {
 }
 
 const profileSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+    unique: true,
+  },
   createdAt: { type: Date, default: Date.now },
   upadatedAt: { type: Date, default: Date.now },
   photo: {

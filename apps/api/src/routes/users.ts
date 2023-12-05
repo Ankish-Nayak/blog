@@ -1,15 +1,13 @@
-import express, { Request, Response } from "express";
-import fs from "fs";
 import Cookies from "cookies";
-import jwt from "jsonwebtoken";
-import { loginTypes, signUpTypes, updateProfileTypes } from "types";
-import { Post, User } from "models";
-import { authenticateJwt } from "../middlewares/auth";
 import { config } from "dotenv";
-import { refreshLoginSession } from "../helpers/removeExpiryToken";
+import express, { Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import { User } from "models";
 import multer from "multer";
-import { fstat } from "fs";
 import path from "path";
+import { loginTypes, signUpTypes, updateProfileTypes } from "types";
+import { refreshLoginSession } from "../helpers/removeExpiryToken";
+import { authenticateJwt } from "../middlewares/auth";
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, "../../data/"));

@@ -21,9 +21,6 @@ function ResponsiveAppBar() {
 
   useEffect(() => {
     if (data && isSuccess) {
-      // if (location.pathname !== "/posts") {
-      //   navigate("posts/");
-      // }
       dispatch(setCredentials({ user: data.name, id: data.id }));
     }
     if (isError) {

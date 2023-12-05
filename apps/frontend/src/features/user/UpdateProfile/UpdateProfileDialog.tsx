@@ -5,14 +5,18 @@ import {
   DialogContent,
   Stack,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import UpdateProfile from "./UpdateProfile";
 
 const UpdateProfileDialog = ({
+  profilePicUrl,
   show,
   setOpenUpdateProfile,
+  setProfilePicUrl,
 }: {
+  profilePicUrl: string;
   show: boolean;
+  setProfilePicUrl: Dispatch<SetStateAction<string>>;
   setOpenUpdateProfile: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [reset, setReset] = useState<boolean>(false);
@@ -35,8 +39,10 @@ const UpdateProfileDialog = ({
       >
         <DialogContent>
           <UpdateProfile
+            profilePicUrl={profilePicUrl}
             reset={reset}
             setReset={setReset}
+            setProfilePicUrl={setProfilePicUrl}
             setUpdating={setUpdating}
           />
         </DialogContent>

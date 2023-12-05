@@ -2,7 +2,6 @@ import express, { Request, Response } from "express";
 import { authenticateJwt } from "../middlewares/auth";
 import { ProfilePicture } from "models";
 import multer from "multer";
-import path from "path";
 
 export const router = express.Router();
 // storing images to disk space
@@ -40,10 +39,7 @@ router.get(
   },
 );
 router.get("/profile/:userId", async (req: Request, res: Response) => {
-  // const userId = req.headers.userId as string;
   const userId = req.params.userId as string;
-  // const userId = "6564b90e082494272812ad98";
-
   try {
     const profilePicture = await ProfilePicture.findOne({ userId });
     if (profilePicture) {
@@ -87,6 +83,48 @@ router.post(
         });
       } else {
         res.status(403).json({ message: " failed to create" });
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ message: "internal error" });
+    }
+  },
+);
+
+router.put(
+  "/profile",
+  authenticateJwt,
+  upload.single("avatar"),
+  async (req: Request, res: Response) => {
+    console.log("hitititit");
+    const userId = req.headers.userId as string;
+    if (typeof req.file === "undefined") {
+      return res.status(400).json({
+        error: "Bad Request - Missing required data",
+      });
+    }
+    try {
+      const { buffer, mimetype } = req.file;
+      const updatedProfile = await ProfilePicture.findOneAndUpdate(
+        { userId },
+        {
+          $set: {
+            photo: {
+              contentType: mimetype,
+              data: buffer,
+            },
+          },
+          updatedAt: Date.now(),
+        },
+        { new: true },
+      );
+      if (updatedProfile) {
+        res.json({
+          message: "profile updated successfully",
+          photo: updatedProfile.photo,
+        });
+      } else {
+        res.status(404).json({ error: "profile not found" });
       }
     } catch (e) {
       console.log(e);

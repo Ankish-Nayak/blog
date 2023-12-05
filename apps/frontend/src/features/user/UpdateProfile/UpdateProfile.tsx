@@ -5,7 +5,6 @@ import {
   Card,
   CardActionArea,
   CardContent,
-  Skeleton,
   TextField,
   Tooltip,
 } from "@mui/material";
@@ -21,8 +20,8 @@ import { updateProfileTypes } from "types";
 import { RootState } from "../../../app/store";
 import { BASE_URL } from "../../api/apiSlice";
 import {
-  useGetProfilePicQuery,
   useUpdateProfileMutation,
+  useUpdateProfilePicMutation,
 } from "../../me/authApiSlice";
 import { setCredentials } from "../../me/authSlice";
 import { useGetUserQuery } from "../../users/usersSlice";
@@ -35,67 +34,40 @@ const UpdateProfile = ({
   reset,
   setUpdating,
   setReset,
+  setProfilePicUrl,
+  profilePicUrl,
 }: {
+  profilePicUrl: string;
   reset: boolean;
+  setProfilePicUrl: Dispatch<SetStateAction<string>>;
   setUpdating: Dispatch<SetStateAction<boolean>>;
   setReset: Dispatch<SetStateAction<boolean>>;
 }) => {
   const id = useSelector((state: RootState) => state.auth.id);
-  // const user = useSelector((state): RootState) => state.auth.user));
   const { data: user, isLoading, isSuccess } = useGetUserQuery(id as string);
   const [update] = useUpdateProfileMutation();
-  const {
-    data: pic,
-    isSuccess: isPicSuccess,
-    isLoading: isPicLoading,
-  } = useGetProfilePicQuery("");
 
+  const [file, setFile] = useState<File | null>(null);
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
-  const [profilePic, setProfilePic] = useState<string>(
-    // `${BASE_URL}/profilePictures/profile/${id}`,
-    pic || "",
-  );
+  const [profilePic, setProfilePic] = useState<string>(profilePicUrl || "");
   const [nameError, setNameError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
   const [disabled, setDisabled] = useState<boolean>(true);
   const [showToolTip, setShowToolTip] = useState<boolean>(false);
 
-  // const init = async () => {
-  //   try {
-  //     const res = await axios.get(
-  //       `${BASE_URL}/profilePictures/profile/protected`,
-  //       {
-  //         withCredentials: true,
-  //       },
-  //     );
-  //     const data = res.data;
-  //     const contentType = data.photo.contentType;
-  //     const bufferData = data.photo.data.data;
-  //     setProfilePic(
-  //       `data:${contentType};base64, ${Buffer.from(bufferData).toString(
-  //         "base64",
-  //       )}`,
-  //     );
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // };
-  //
-  // useEffect(() => {
-  //   init();
-  // }, []);
-
+  const [updateProfilePic] = useUpdateProfilePicMutation();
   const originalState = () => {
     if (isSuccess) {
       setName(user.name);
       setEmail(user.email);
-      setProfilePic(pic || "");
+      setProfilePic(profilePicUrl || "");
       setDisabled(true);
       setNameError(null);
       setEmailError(null);
       setShowToolTip(false);
       setUpdating(false);
+      setFile(null);
     }
   };
 
@@ -133,7 +105,6 @@ const UpdateProfile = ({
           });
         });
         rej(false);
-        // console.log(parsedData.error);
       } else {
         res(true);
       }
@@ -163,6 +134,22 @@ const UpdateProfile = ({
           setUpdating(false);
           dispatch(setCredentials({ id: res.id, user: res.name }));
           setDisabled(true);
+        } catch (e) {
+          console.log(e);
+        }
+      }
+      if (file) {
+        // upload image
+        const formData = new FormData();
+        console.log("formData", formData);
+        formData.append("avatar", file);
+        console.log("file after", file);
+        console.log("formData values outside", formData.get("avatar"));
+        try {
+          const res = await updateProfilePic(formData).unwrap();
+          setProfilePicUrl(res);
+          setProfilePic(res);
+          console.log("file inside", file);
         } catch (e) {
           console.log(e);
         }
@@ -198,27 +185,26 @@ const UpdateProfile = ({
               alignContent={"flex-end"}
               alignItems={"center"}
             >
-              <label htmlFor="upload-image">
-                {isPicLoading && <Skeleton variant="circular"></Skeleton>}
-                {isPicSuccess && (
-                  <Tooltip
-                    title="click on image to change it"
-                    open={showToolTip}
-                    onClose={() => {
-                      setShowToolTip(false);
+              <label
+                htmlFor={disabled ? "" : "upload-image"}
+                aria-disabled={disabled}
+              >
+                <Tooltip
+                  title="click on image to change it"
+                  open={showToolTip}
+                  disableHoverListener={disabled}
+                  onClose={() => {
+                    setShowToolTip(false);
+                  }}
+                >
+                  <Avatar
+                    sx={{
+                      height: "175px",
+                      width: "175px",
                     }}
-                  >
-                    <Tooltip title="click to change profile">
-                      <Avatar
-                        sx={{
-                          height: "175px",
-                          width: "175px",
-                        }}
-                        src={profilePic}
-                      />
-                    </Tooltip>
-                  </Tooltip>
-                )}
+                    src={profilePic}
+                  />
+                </Tooltip>
               </label>
               <label htmlFor="upload-image">
                 <input
@@ -227,13 +213,36 @@ const UpdateProfile = ({
                   id="upload-image"
                   accept="image/*"
                   onChange={(e) => {
+                    if (e.target.files === null) {
+                      return;
+                    }
                     const file = e.target.files[0];
-                    if (file) {
+                    const MAX_SIZE_IN_MB = 5;
+                    if (
+                      file &&
+                      file.type.startsWith("image/") &&
+                      file.size <= MAX_SIZE_IN_MB * 11024 * 1024
+                    ) {
+                      setFile(file);
+                      console.log("file", file);
                       const reader = new FileReader();
                       reader.onloadend = () => {
                         setProfilePic(reader.result as string);
                       };
                       reader.readAsDataURL(file);
+                      const formData = new FormData();
+                      formData.append("avatar", file);
+                      console.log("form data from inside", formData);
+                      console.log("form values", formData.get("avatar"));
+                    } else {
+                      if (file && !file.type.startsWith("image/"))
+                        console.log("Invalid file type. Please upload image.");
+                      if (
+                        file &&
+                        !(file.size <= MAX_SIZE_IN_MB * 11024 * 1024)
+                      ) {
+                        console.log("Size is greater than 5 MB");
+                      }
                     }
                   }}
                 />

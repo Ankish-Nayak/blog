@@ -1,10 +1,9 @@
-import express from "express";
-import { Request, Response } from "express";
-import { IPost, Post, User, Reaction } from "models";
-import { authenticateJwt } from "../middlewares/auth";
-import { addReactionType } from "types";
-import { Document, Types } from "mongoose";
+import express, { Request, Response } from "express";
 import { IncomingHttpHeaders } from "http2";
+import { IPost, Post, Reaction, User } from "models";
+import { Document, Types } from "mongoose";
+import { addReactionType } from "types";
+import { authenticateJwt } from "../middlewares/auth";
 
 interface MRequest extends Request {
   headers: IncomingHttpHeaders | { userId: string; name: string };

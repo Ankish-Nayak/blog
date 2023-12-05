@@ -3,9 +3,11 @@ import React from "react";
 import Profile from "./Profile";
 
 const ProfileDialog = ({
+  pic,
   show,
   setOpenProfile,
 }: {
+  pic: string;
   show: boolean;
   setOpenProfile: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
@@ -25,7 +27,7 @@ const ProfileDialog = ({
         open={show}
       >
         <DialogContent>
-          <Profile />
+          <Profile pic={pic} />
         </DialogContent>
         <DialogActions>
           <Button

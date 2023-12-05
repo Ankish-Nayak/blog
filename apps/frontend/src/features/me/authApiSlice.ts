@@ -50,6 +50,20 @@ const authSlice = apiSlice.injectEndpoints({
         )}`;
       },
     }),
+    updateProfilePic: builder.mutation<string, FormData>({
+      query: (formData) => ({
+        url: "/profilePictures/profile/",
+        method: "PUT",
+        body: formData,
+      }),
+      transformResponse(res: IgetProfilePicture) {
+        const contentType = res.photo.contentType;
+        const bufferData = res.photo.data.data;
+        return `data:${contentType};base64, ${Buffer.from(bufferData).toString(
+          "base64",
+        )}`;
+      },
+    }),
     updateProfile: builder.mutation<
       ILogin,
       { userId: string; name: string; email: string; password?: string }
@@ -124,6 +138,7 @@ export const {
   useGetProfileQuery,
   useMeQuery,
   useGetProfilePicQuery,
+  useUpdateProfilePicMutation,
 } = authSlice;
 
 export default authSlice;

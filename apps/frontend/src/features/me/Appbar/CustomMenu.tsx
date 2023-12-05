@@ -25,9 +25,10 @@ const CustomMenu = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [logout, { isSuccess, isLoading }] = useLogoutMutation();
   const {
-    data: pic,
+    data: profilePic,
     isLoading: isPicLoading,
     isSuccess: isPicSuccess,
+    refetch: picRefech,
   } = useGetProfilePicQuery("");
   const { data, isLoading: isMeLoading } = useMeQuery("");
 
@@ -38,6 +39,16 @@ const CustomMenu = () => {
   const [show, setShow] = useState(false);
   const [openProfile, setOpenProfile] = useState<boolean>(false);
   const [openUpdateProfile, setOpenUpdateProfile] = useState<boolean>(false);
+
+  // const [pic, setPic] = useState<string>(profilePic || "");
+  const [profilePicUrl, setProfilePicUrl] = useState<string>(profilePic || "");
+
+  useEffect(() => {
+    if (isPicSuccess) {
+      setProfilePicUrl(profilePic);
+      // setPic(profilePic);
+    }
+  }, [isPicSuccess]);
 
   const navigate = useNavigate();
   const settings: {
@@ -71,6 +82,11 @@ const CustomMenu = () => {
   ];
 
   useEffect(() => {
+    if (openUpdateProfile) {
+      picRefech();
+    }
+  }, [openUpdateProfile]);
+  useEffect(() => {
     if (isSuccess) {
       navigate("/");
     }
@@ -90,13 +106,21 @@ const CustomMenu = () => {
       <UpdateProfileDialog
         show={openUpdateProfile}
         setOpenUpdateProfile={setOpenUpdateProfile}
+        profilePicUrl={profilePicUrl}
+        setProfilePicUrl={setProfilePicUrl}
       />
-      <Profile show={openProfile} setOpenProfile={setOpenProfile} />
+      <Profile
+        show={openProfile}
+        setOpenProfile={setOpenProfile}
+        pic={profilePicUrl}
+      />
       {isLoading === false && isMeLoading === false && (
         <Tooltip title="Open settings">
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
             {isPicLoading && <Skeleton variant="rounded"></Skeleton>}
-            {isPicSuccess && <Avatar alt="Remy Sharp" src={pic}></Avatar>}
+            {isPicSuccess && (
+              <Avatar alt="Remy Sharp" src={profilePicUrl}></Avatar>
+            )}
           </IconButton>
         </Tooltip>
       )}
