@@ -1,20 +1,34 @@
-import { CircularProgress, Menu, MenuItem, Typography } from "@mui/material";
-import React from "react";
-import { useEffect, useState } from "react";
+import {
+  CircularProgress,
+  Menu,
+  MenuItem,
+  Skeleton,
+  Typography,
+} from "@mui/material";
+import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
-import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { logOut, setCredentials } from "../authSlice";
-import { useLogoutMutation, useMeQuery } from "../authApiSlice";
+import { useNavigate } from "react-router-dom";
 import Profile from "../../user/Profile/ProfileDialog";
 import UpdateProfileDialog from "../../user/UpdateProfile/UpdateProfileDialog";
+import {
+  useGetProfilePicQuery,
+  useLogoutMutation,
+  useMeQuery,
+} from "../authApiSlice";
+import { logOut, setCredentials } from "../authSlice";
 
 const CustomMenu = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [logout, { isSuccess, isLoading }] = useLogoutMutation();
+  const {
+    data: pic,
+    isLoading: isPicLoading,
+    isSuccess: isPicSuccess,
+  } = useGetProfilePicQuery("");
   const { data, isLoading: isMeLoading } = useMeQuery("");
 
   const dispatch = useDispatch();
@@ -81,7 +95,8 @@ const CustomMenu = () => {
       {isLoading === false && isMeLoading === false && (
         <Tooltip title="Open settings">
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-            <Avatar alt="Remy Sharp">A</Avatar>
+            {isPicLoading && <Skeleton variant="rounded"></Skeleton>}
+            {isPicSuccess && <Avatar alt="Remy Sharp" src={pic}></Avatar>}
           </IconButton>
         </Tooltip>
       )}

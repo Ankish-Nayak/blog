@@ -1,5 +1,11 @@
-import { Button, Dialog, DialogActions, DialogContent } from "@mui/material";
-import React from "react";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Stack,
+} from "@mui/material";
+import React, { useState } from "react";
 import UpdateProfile from "./UpdateProfile";
 
 const UpdateProfileDialog = ({
@@ -9,6 +15,8 @@ const UpdateProfileDialog = ({
   show: boolean;
   setOpenUpdateProfile: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const [reset, setReset] = useState<boolean>(false);
+  const [updating, setUpdating] = useState<boolean>(false);
   return (
     <>
       <Button
@@ -20,21 +28,35 @@ const UpdateProfileDialog = ({
       </Button>
       <Dialog
         onClose={() => {
+          setOpenUpdateProfile(false);
           console.log("closed");
         }}
         open={show}
       >
         <DialogContent>
-          <UpdateProfile />
+          <UpdateProfile
+            reset={reset}
+            setReset={setReset}
+            setUpdating={setUpdating}
+          />
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={() => {
-              setOpenUpdateProfile(!show);
-            }}
+          <Stack
+            display={"flex"}
+            flexDirection={"row"}
+            justifyContent={"space-between"}
           >
-            Close
-          </Button>
+            {updating && (
+              <Button onClick={() => setReset(!reset)}>reset</Button>
+            )}
+            <Button
+              onClick={() => {
+                setOpenUpdateProfile(!show);
+              }}
+            >
+              Close
+            </Button>
+          </Stack>
         </DialogActions>
       </Dialog>
     </>

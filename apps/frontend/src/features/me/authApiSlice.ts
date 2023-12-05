@@ -1,5 +1,7 @@
-import { loginParams, signUpParams } from "types";
+import { loginParams, signUpParams, IgetProfilePicture } from "types";
 import { apiSlice } from "../api/apiSlice";
+import { Buffer } from "buffer";
+window.Buffer = window.Buffer || Buffer;
 
 interface ILogin {
   id: string;
@@ -38,7 +40,16 @@ const authSlice = apiSlice.injectEndpoints({
       query: () => "/users/me",
       providesTags: ["User"],
     }),
-
+    getProfilePic: builder.query<string, string>({
+      query: () => "/profilePictures/profile/protected/",
+      transformResponse(res: IgetProfilePicture) {
+        const contentType = res.photo.contentType;
+        const bufferData = res.photo.data.data;
+        return `data:${contentType};base64, ${Buffer.from(bufferData).toString(
+          "base64",
+        )}`;
+      },
+    }),
     updateProfile: builder.mutation<
       ILogin,
       { userId: string; name: string; email: string; password?: string }
@@ -112,6 +123,7 @@ export const {
   useUpdateProfileMutation,
   useGetProfileQuery,
   useMeQuery,
+  useGetProfilePicQuery,
 } = authSlice;
 
 export default authSlice;

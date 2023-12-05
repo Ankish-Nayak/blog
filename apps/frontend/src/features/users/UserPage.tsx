@@ -1,7 +1,6 @@
-import { useParams } from "react-router-dom";
-import { useGetUserQuery } from "./usersSlice";
+import { Link, useParams } from "react-router-dom";
 import { useGetPostsByUserIdQuery } from "../posts/postsSlice";
-import { Link } from "react-router-dom";
+import { useGetUserQuery } from "./usersSlice";
 const UserPage = () => {
   const { userId } = useParams() as { userId: string };
   const {

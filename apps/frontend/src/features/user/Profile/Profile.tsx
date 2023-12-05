@@ -1,18 +1,26 @@
-import { useSelector } from "react-redux";
-import { useGetUserQuery } from "../../users/usersSlice";
-import { RootState } from "../../../app/store";
 import {
+  Avatar,
   Box,
   Card,
   CardContent,
   CircularProgress,
+  Skeleton,
   TextField,
 } from "@mui/material";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../app/store";
 import { BASE_URL } from "../../api/apiSlice";
+import { useGetProfilePicQuery } from "../../me/authApiSlice";
+import { useGetUserQuery } from "../../users/usersSlice";
 
 const Profile = () => {
   const id = useSelector((state: RootState) => state.auth.id);
   const { data: user, isLoading, isSuccess } = useGetUserQuery(id as string);
+  const {
+    data: pic,
+    isLoading: isPicLoading,
+    isSuccess: isPicSuccess,
+  } = useGetProfilePicQuery("");
 
   console.log("link", `${BASE_URL}/profilePictures/profile/${id}`);
   if (isLoading) {
@@ -26,31 +34,50 @@ const Profile = () => {
             padding: "10px",
           }}
         >
-          <img
-            height={"200"}
-            style={{
-              float: "left",
-              padding: "10px",
-            }}
-            src={`${BASE_URL}/profilePictures/profile/${id}`}
-          />
+          <Box
+            display={"flex"}
+            flexDirection={"row"}
+            justifyContent={"space-between"}
+          >
+            <Box
+              flexDirection="column"
+              padding={"10px"}
+              justifyContent={"center"}
+              alignContent={"flex-end"}
+              alignItems={"center"}
+            >
+              {isPicLoading && (
+                <Skeleton
+                  variant="rounded"
+                  height={"175px"}
+                  width={"175px"}
+                ></Skeleton>
+              )}
+              {isPicSuccess && (
+                <Avatar
+                  sx={{
+                    height: "175px",
+                    width: "175px",
+                  }}
+                  src={pic}
+                />
+              )}
+            </Box>
 
-          <CardContent>
-            <TextField
-              label={"name"}
-              value={user.name}
-              margin="normal"
-              size="medium"
-              disabled
-            />
+            <Box display="flex" flexDirection={"column"}>
+              <CardContent>
+                <TextField
+                  label={"name"}
+                  value={user.name}
+                  margin="normal"
+                  size="medium"
+                  disabled
+                />
 
-            <TextField
-              label={"email"}
-              margin="normal"
-              value={user.email}
-              disabled
-            />
-          </CardContent>
+                <TextField label={"email"} value={user.email} disabled />
+              </CardContent>
+            </Box>
+          </Box>
         </Card>
       </Box>
     );

@@ -20,6 +20,25 @@ export const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
+router.get(
+  "/profile/protected",
+  authenticateJwt,
+  async (req: Request, res: Response) => {
+    const userId = req.headers.userId as string;
+    console.log("userId", userId);
+    try {
+      const profilePicture = await ProfilePicture.findOne({ userId });
+      if (profilePicture) {
+        res.json({ photo: profilePicture.photo });
+      } else {
+        res.status(402).json({ message: "profile photo not found" });
+      }
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ message: "internal error" });
+    }
+  },
+);
 router.get("/profile/:userId", async (req: Request, res: Response) => {
   // const userId = req.headers.userId as string;
   const userId = req.params.userId as string;

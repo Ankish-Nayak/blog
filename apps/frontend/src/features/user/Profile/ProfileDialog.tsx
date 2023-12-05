@@ -20,7 +20,7 @@ const ProfileDialog = ({
       </Button>
       <Dialog
         onClose={() => {
-          console.log("closed");
+          setOpenProfile(false);
         }}
         open={show}
       >
