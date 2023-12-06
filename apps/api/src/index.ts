@@ -1,11 +1,19 @@
-import express from "express";
-import { router as userRouter } from "./routes/users";
-import { router as postRouter } from "./routes/posts";
-import { router as reactionRouter } from "./routes/reactions";
-import { router as profilePictureRouter } from "./routes/profilePictures";
-import { run as connectToDb } from "models";
-import { config } from "dotenv";
 import cors from "cors";
+import { config } from "dotenv";
+import express from "express";
+import { run as connectToDb } from "models";
+import errorHandler from "./middlewares/errorHandler";
+import { router as postRouter } from "./routes/posts";
+import { router as profilePictureRouter } from "./routes/profilePictures";
+import { router as reactionRouter } from "./routes/reactions";
+import { router as userRouter } from "./routes/users";
+
+if (!process.env.SECRET) {
+  console.log("Secret key is not defined in the environment variables.");
+  process.exit(1);
+}
+
+export const secret: string = process.env.SECRET;
 
 config();
 const app = express();
@@ -22,6 +30,7 @@ app.use("/users", userRouter);
 app.use("/posts", postRouter);
 app.use("/reactions", reactionRouter);
 app.use("/profilePictures", profilePictureRouter);
+app.use(errorHandler);
 connectToDb()
   .then(() => {
     app.listen(process.env.PORT || 3000, () => {

@@ -23,11 +23,13 @@ import { logOut, setCredentials } from "../authSlice";
 
 const CustomMenu = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const [logout, { isSuccess, isLoading }] = useLogoutMutation();
+  const [logout, { isSuccess: isLogoutSuccess, isLoading: isLogoutLoading }] =
+    useLogoutMutation();
   const {
     data: profilePic,
     isLoading: isPicLoading,
     isSuccess: isPicSuccess,
+    isError: isPicError,
     refetch: picRefech,
   } = useGetProfilePicQuery("");
   const { data, isLoading: isMeLoading } = useMeQuery("");
@@ -71,12 +73,12 @@ const CustomMenu = () => {
       name: "Logout",
       action: async () => {
         try {
-          await logout("logout").unwrap();
+          const res = await logout("logout").unwrap();
+          console.log("logout", res);
           dispatch(logOut());
         } catch (e) {
           console.log(e);
         }
-        console.log("logout");
       },
     },
   ];
@@ -87,10 +89,11 @@ const CustomMenu = () => {
     }
   }, [openUpdateProfile]);
   useEffect(() => {
-    if (isSuccess) {
+    if (isLogoutSuccess) {
+      dispatch(logOut());
       navigate("/");
     }
-  }, [isSuccess, navigate]);
+  }, [isLogoutSuccess, navigate]);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setShow(!show);
@@ -114,17 +117,20 @@ const CustomMenu = () => {
         setOpenProfile={setOpenProfile}
         pic={profilePicUrl}
       />
-      {isLoading === false && isMeLoading === false && (
+      {isLogoutLoading === false && isMeLoading === false && (
         <Tooltip title="Open settings">
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
             {isPicLoading && <Skeleton variant="rounded"></Skeleton>}
             {isPicSuccess && (
               <Avatar alt="Remy Sharp" src={profilePicUrl}></Avatar>
             )}
+            {isPicError && (
+              <Avatar alt={data.name}>{data.name[0].toUpperCase()}</Avatar>
+            )}
           </IconButton>
         </Tooltip>
       )}
-      {(isLoading || isMeLoading) && (
+      {(isLogoutLoading || isMeLoading || isPicLoading) && (
         <CircularProgress
           sx={{
             color: "whitesmoke",

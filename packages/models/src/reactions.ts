@@ -19,6 +19,9 @@ const reactionSchema = new Schema({
   },
 });
 
-reactionSchema.index({ postId: 1, reactionType: 1 }, { unique: true });
+reactionSchema.index(
+  { postId: 1, reactionType: 1, clickedBy: 1 },
+  { unique: true },
+);
 
 export const Reaction = model<IReactionSchema>("Reaction", reactionSchema);

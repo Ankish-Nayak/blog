@@ -3,9 +3,9 @@ import {
   createEntityAdapter,
   createSelector,
 } from "@reduxjs/toolkit";
-import { apiSlice } from "../api/apiSlice";
-import { IgetPostsByUserId, IgetPosts, IgetPost } from "types";
+import { IgetPost, IgetPosts, IgetPostsByUserId } from "types";
 import { RootState } from "../../app/store";
+import { apiSlice } from "../api/apiSlice";
 import { IFilter } from "./filtersSlice";
 
 export type IReaction = "thumbsUp" | "wow" | "heart" | "rocket" | "coffee";
@@ -220,7 +220,7 @@ export const postsApiSlice = apiSlice.injectEndpoints({
           reactionType,
         },
       }),
-      async onQueryStarted({ postId }, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ queryFulfilled }) {
         // manually updating cache
         // const patchResult = dispatch(
         //   postsApiSlice.util.updateQueryData(
@@ -257,8 +257,8 @@ export const postsApiSlice = apiSlice.injectEndpoints({
           //   }),
           // );
         } catch (e) {
-          patchResult.undo();
-          patchResult2.undo();
+          // patchResult.undo();
+          // patchResult2.undo();
         }
       },
     }),

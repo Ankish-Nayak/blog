@@ -18,7 +18,12 @@ const authSlice = apiSlice.injectEndpoints({
           ...data,
         },
       }),
-      invalidatesTags: [{ type: "Post", id: "LIST" }],
+      invalidatesTags: [
+        "Post",
+        "User",
+        "Auth",
+        { type: "Auth", id: "profilePic" },
+      ],
     }),
     signup: builder.mutation<ILogin, signUpParams>({
       query: (data) => ({
@@ -34,11 +39,11 @@ const authSlice = apiSlice.injectEndpoints({
         url: "/users/logout",
         method: "POST",
       }),
-      invalidatesTags: [{ type: "Post", id: "LIST" }],
+      invalidatesTags: ["Post", "User", "Auth"],
     }),
     me: builder.query<ILogin, string>({
       query: () => "/users/me",
-      providesTags: ["User"],
+      providesTags: ["Auth"],
     }),
     getProfilePic: builder.query<string, string>({
       query: () => "/profilePictures/profile/protected/",
@@ -49,6 +54,7 @@ const authSlice = apiSlice.injectEndpoints({
           "base64",
         )}`;
       },
+      providesTags: [{ type: "Auth", id: "profilePic" }],
     }),
     updateProfilePic: builder.mutation<string, FormData>({
       query: (formData) => ({
@@ -63,6 +69,7 @@ const authSlice = apiSlice.injectEndpoints({
           "base64",
         )}`;
       },
+      invalidatesTags: [{ type: "Auth", id: "profilePic" }],
     }),
     updateProfile: builder.mutation<
       ILogin,

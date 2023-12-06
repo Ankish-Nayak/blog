@@ -16,21 +16,10 @@ export interface IPost {
   updatedAt: Date;
 }
 
-// export interface IReactions {
-//   thumbsUp: Schema.Types.ObjectId[];
-//   wow: Schema.Types.ObjectId[];
-//   heart: Schema.Types.ObjectId[];
-//   rocket: Schema.Types.ObjectId[];
-//   coffee: Schema.Types.ObjectId[];
-// }
-// export interface IClick {
-//   clickedBy: string;
-//   clickedAt: Date;
-// }
 const postSchema = new Schema<IPost>({
   title: { type: String, required: true },
   content: { type: String, required: true },
-  userId: { type: Schema.Types.ObjectId, ref: "User" },
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   reactionsCount: {
     thumbsUp: { type: Number, default: 0 },
     heart: { type: Number, default: 0 },

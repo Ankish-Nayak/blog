@@ -1,23 +1,22 @@
 import jwt from "jsonwebtoken";
+const currentTimestamp = Math.floor(Date.now() / 1000);
 export const refreshLoginSession = async (
-  token: string,
+  logoutIoken: string,
   secret: string,
   loginSessions: string[],
-): Promise<string[]> => {
-  return loginSessions.filter(async (session) => {
-    if (session === token) {
+) => {
+  return loginSessions.filter((token) => {
+    if (token === logoutIoken) {
       return false;
     }
-    const promisefy = () => {
-      return new Promise<boolean>((res) => {
-        jwt.verify(session, secret, (err, _) => {
-          if (err) {
-            return res(false);
-          }
-          return res(true);
-        });
-      });
-    };
-    return await promisefy();
+    try {
+      const decodedToken = jwt.verify(token, secret) as {
+        exp: number;
+      };
+      return decodedToken.exp > currentTimestamp;
+    } catch (error) {
+      console.error("Error decoding token:", error);
+      return false;
+    }
   });
 };

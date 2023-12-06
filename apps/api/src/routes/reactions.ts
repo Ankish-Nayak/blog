@@ -1,9 +1,9 @@
-import express from "express";
+import express, { NextFunction } from "express";
 import { Request, Response } from "express";
 import { Post, Reaction } from "models";
 
 export const router = express.Router();
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   const { postId, loggedInUserId } = req.query;
   if (typeof postId === "string" && typeof loggedInUserId === "string") {
     try {
@@ -24,16 +24,14 @@ router.get("/", async (req: Request, res: Response) => {
       });
       res.json({ ...clicked, reactionsCount: post?.reactionsCount });
     } catch (e) {
-      console.log(e);
-      res.json({ message: "internal error" });
+      next(e);
     }
   } else {
     try {
       const reactions = await Reaction.find({});
       res.json({ reactions });
     } catch (e) {
-      console.log(e);
-      res.json({ message: "internal error" });
+      next(e);
     }
   }
 });

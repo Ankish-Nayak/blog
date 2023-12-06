@@ -29,7 +29,8 @@ const Login = ({
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const [login, { isLoading, isSuccess }] = useLoginMutation();
+  const [login, { isLoading: isLoginLoading, isSuccess: isLoginSuccess }] =
+    useLoginMutation();
 
   const dataValidation = useCallback(async () => {
     return new Promise<boolean>((res, rej) => {
@@ -72,22 +73,31 @@ const Login = ({
           password,
         };
         const res = await login(data).unwrap();
+        // if (isLoginSuccess) {
         dispatch(setCredentials({ user: res.name, id: res.id }));
-        if (isSuccess) {
-          console.log(res);
-        } else if (isLoading) {
-          return <p>Loading...</p>;
-        }
+        navigate("/posts");
+        // console.log(res);
+        // } else if (isLoginLoading) {
+        // return <p>Loading...</p>;
+        // }
       } catch (e) {
         console.log(e);
       }
     }
-  }, [email, password, dataValidation, isLoading, isSuccess, login, dispatch]);
+  }, [
+    email,
+    password,
+    dataValidation,
+    isLoginLoading,
+    isLoginSuccess,
+    login,
+    dispatch,
+  ]);
   useEffect(() => {
-    if (isSuccess) {
+    if (isLoginSuccess) {
       navigate("/posts");
     }
-  }, [isSuccess, navigate]);
+  }, [isLoginSuccess, navigate]);
 
   return (
     <Box
@@ -98,8 +108,8 @@ const Login = ({
       alignItems={"center"}
       padding={0}
     >
-      {isLoading && <CircularIndeterminate />}
-      {!isLoading && (
+      {isLoginLoading && <CircularIndeterminate />}
+      {!isLoginLoading && (
         <Card
           variant="outlined"
           sx={{

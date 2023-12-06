@@ -1,8 +1,8 @@
 import { Button, Stack, Typography } from "@mui/material";
-import { IPost, IReaction, useAddReactionMutation } from "./postsSlice";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
-import { useState } from "react";
+import { IPost, IReaction, useAddReactionMutation } from "./postsSlice";
 
 const reactionEmoji = {
   thumbsUp: "👍",
@@ -12,6 +12,9 @@ const reactionEmoji = {
   coffee: "☕",
 };
 
+// TODO: make navbar much more better ui/ux
+
+// TODO: refactor backend routes in accordannce to url design patterns
 const ReactionButtons = ({ post }: { post: IPost }) => {
   const loggedInUser = useSelector((state: RootState) => state.auth);
   const [addReaction] = useAddReactionMutation();
@@ -39,7 +42,6 @@ const ReactionButtons = ({ post }: { post: IPost }) => {
       throw new Error("not logged in");
     }
 
-    console.log(reactionType);
     try {
       const data = {
         reactionType,
@@ -48,24 +50,8 @@ const ReactionButtons = ({ post }: { post: IPost }) => {
         reactionsCount,
         clicked: reactions,
       };
-      console.log(reactionType);
-      // setReactions((prev) => {
-      //   return {
-      //     ...prev,
-      //     [reactionType]: prev[reactionType] ? true : false,
-      //   };
-      // });
-      // setReactionsCount((prev) => {
-      //   return {
-      //     ...prev,
-      //     [reactionType]: reactions[reactionType]
-      //       ? prev[reactionType] - 1
-      //       : prev[reactionType] + 1,
-      //   };
-      // });
       const res = await addReaction(data).unwrap();
       setReactionsCount({ ...res.reactionsCount });
-      // console.log("res", res);
       setReactions({
         ...res.clicked,
       });

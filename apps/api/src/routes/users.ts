@@ -1,18 +1,20 @@
 import Cookies from "cookies";
 import { config } from "dotenv";
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { User } from "models";
 import multer from "multer";
 import path from "path";
 import { loginTypes, signUpTypes, updateProfileTypes } from "types";
+import { secret } from "..";
 import { refreshLoginSession } from "../helpers/removeExpiryToken";
 import { authenticateJwt } from "../middlewares/auth";
+
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (_req, _file, cb) => {
     cb(null, path.join(__dirname, "../../data/"));
   },
-  filename: (req, file, cb) => {
+  filename: (_req, file, cb) => {
     cb(
       null,
       file.originalname + "-" + Date.now() + path.extname(file.originalname),
@@ -35,90 +37,82 @@ router.get("/me", authenticateJwt, async (req: Request, res: Response) => {
 });
 
 // login route for user
-router.post("/login", async (req: Request, res: Response) => {
-  const secret = process.env.SECRET;
-  if (typeof secret === "undefined") {
-    console.log("secret not found");
-    return res.status(500).json({ message: "internal error" });
-  }
-  const parsedInput = loginTypes.safeParse(req.body);
-  if (!parsedInput.success) {
-    return res.status(411).json({ error: parsedInput.error });
-  }
-  const { email, password } = parsedInput.data;
-  try {
-    const existingUser = await User.findOne({ email, password });
-    if (existingUser) {
-      const token = jwt.sign(
-        { name: existingUser.name, userId: existingUser._id },
-        secret,
-        {
-          expiresIn: "1h",
-        },
-      );
-      existingUser.loginSessions.push(token);
-      existingUser.loginSessions = await refreshLoginSession(
-        "",
-        secret,
-        existingUser.loginSessions,
-      );
-      await existingUser.save();
-      const cookies = new Cookies(req, res);
-      cookies.set("user-token", token);
-      res.json({
-        message: "user loggedIn",
-        name: existingUser.name,
-        id: existingUser._id,
-      });
-    } else {
-      res.status(403).json({ message: "user not found" });
-    }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ message: "internal error" });
-  }
-});
-
-// sign up route for user
-router.post("/signup", async (req: Request, res: Response) => {
-  const secret = process.env.SECRET;
-  if (typeof secret === "undefined") {
-    console.log("secret not found");
-    return res.status(500).json({ message: "internal error" });
-  }
-  const parsedInput = signUpTypes.safeParse(req.body);
-  if (!parsedInput.success) {
-    return res.status(411).json({ error: parsedInput.error });
-  }
-  const { name, email, password } = parsedInput.data;
-  try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      res.status(403).json({ message: "email taken" });
-    } else {
-      const newUser = await User.create({ name, email, password });
-      if (newUser) {
-        const token = jwt.sign({ name, userId: newUser._id }, secret, {
-          expiresIn: "1h",
-        });
+router.post(
+  "/login",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const parsedInput = loginTypes.parse(req.body);
+      const { email, password } = parsedInput;
+      const existingUser = await User.findOne({ email, password });
+      if (existingUser) {
+        const token = jwt.sign(
+          { name: existingUser.name, userId: existingUser._id },
+          secret,
+          {
+            expiresIn: "1h",
+          },
+        );
+        existingUser.loginSessions.push(token);
+        existingUser.loginSessions = await refreshLoginSession(
+          "",
+          secret,
+          existingUser.loginSessions,
+        );
+        await existingUser.save();
         const cookies = new Cookies(req, res);
         cookies.set("user-token", token);
-        newUser.loginSessions.push(token);
-        await newUser.save();
         res.json({
-          message: "user creaed",
-          name: newUser.name,
-          id: newUser._id,
+          message: "user loggedIn",
+          name: existingUser.name,
+          id: existingUser._id,
         });
       } else {
-        res.status(402).json({ message: "failed to create" });
+        res.status(401).json({
+          error: "Invalid username or password",
+        });
       }
+    } catch (e) {
+      next(e);
     }
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ error: "internal error" });
-  }
-});
+  },
+);
+
+// sign up route for user
+router.post(
+  "/signup",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const parsedInput = signUpTypes.parse(req.body);
+      const { name, email, password } = parsedInput;
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        res.status(409).json({
+          error: "Email address is already taken",
+        });
+      } else {
+        const newUser = await User.create({ name, email, password });
+        if (newUser) {
+          const token = jwt.sign({ name, userId: newUser._id }, secret, {
+            expiresIn: "1h",
+          });
+          const cookies = new Cookies(req, res);
+          cookies.set("user-token", token);
+          newUser.loginSessions.push(token);
+          await newUser.save();
+          res.json({
+            message: "user creaed",
+            name: newUser.name,
+            id: newUser._id,
+          });
+        } else {
+          res.status(402).json({ message: "failed to create" });
+        }
+      }
+    } catch (e) {
+      next(e);
+    }
+  },
+);
 
 router.post(
   "/uploadProfile",
@@ -137,19 +131,11 @@ router.post(
 router.post(
   "/profile",
   authenticateJwt,
-  async (req: Request, res: Response) => {
-    const secret = process.env.SECRET;
-    const userId = req.headers["userId"];
-    if (typeof secret === "undefined") {
-      console.log("secret not found");
-      return res.status(500).json({ message: "internal error" });
-    }
-    const parsedInput = updateProfileTypes.safeParse(req.body);
-    if (!parsedInput.success) {
-      return res.status(411).json({ error: parsedInput.error });
-    }
-    const { name, email } = parsedInput.data;
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.headers.userId as string;
     try {
+      const parsedInputs = updateProfileTypes.parse(req.body);
+      const { name, email } = parsedInputs;
       const existingUser = await User.findOne({ _id: userId });
       if (existingUser) {
         const emailUser = await User.findOne({ email });
@@ -190,21 +176,16 @@ router.post(
         res.status(403).json({ message: "user not found" });
       }
     } catch (e) {
-      console.log(e);
-      res.status(500).json({ message: "internal error" });
+      next(e);
     }
   },
 );
 
-// TODO: fix refresh token thing
-// logout user route
-router.post("/logout", authenticateJwt, async (req: Request, res: Response) => {
-  const secret = process.env.SECRET;
-  if (typeof secret === "undefined") {
-    return res.status(500).json({ message: "internal error" });
-  }
-  const { userId } = req.headers;
-  if (userId) {
+router.post(
+  "/logout",
+  authenticateJwt,
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.headers.userId as string;
     try {
       const existingUser = await User.findOne({ _id: userId });
       if (existingUser) {
@@ -222,15 +203,12 @@ router.post("/logout", authenticateJwt, async (req: Request, res: Response) => {
         res.status(403).json({ message: "user dose not exists" });
       }
     } catch (e) {
-      console.log(e);
-      res.status(500).json({ message: "internal error" });
+      next(e);
     }
-  } else {
-    res.status(402).json({ message: "userId dose not exists" });
-  }
-});
+  },
+);
 
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   const regex = req.query.regex;
   console.log("req.query", req.query);
   // get users with pattern
@@ -240,8 +218,7 @@ router.get("/", async (req: Request, res: Response) => {
       const users = await User.find({ name: { $regex: regex, $options: "i" } });
       res.json({ users });
     } catch (e) {
-      console.log(e);
-      res.status(500).json({ message: "internal error" });
+      next(e);
     }
   } else {
     // get all users
@@ -249,14 +226,13 @@ router.get("/", async (req: Request, res: Response) => {
       const users = await User.find({});
       return res.json({ users });
     } catch (e) {
-      console.log(e);
-      res.status(500).json({ message: "internal error" });
+      next(e);
     }
   }
 });
 
 // get one user
-router.get("/:id", async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params.id;
     const existingUser = await User.findOne({ _id: id });
@@ -267,7 +243,6 @@ router.get("/:id", async (req: Request, res: Response) => {
       res.status(403).json({ message: "User not found" });
     }
   } catch (e) {
-    console.log(e);
-    res.status(500).json({ message: "internal error" });
+    next(e);
   }
 });
