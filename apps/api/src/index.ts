@@ -7,6 +7,10 @@ import { router as postRouter } from "./routes/posts";
 import { router as profilePictureRouter } from "./routes/profilePictures";
 import { router as reactionRouter } from "./routes/reactions";
 import { router as userRouter } from "./routes/users";
+import { router as notificationRouter } from "./routes/notifications";
+import removeNotificationWithoutReaction from "./setup/removeNotificationWithoutReactions";
+import removeNotificationsWithoutReaction from "./setup/removeNotificationWithoutReactions";
+import updateIsReadToFalse from "./setup/updateIsReadToFalse";
 
 if (!process.env.SECRET) {
   console.log("Secret key is not defined in the environment variables.");
@@ -30,9 +34,11 @@ app.use("/users", userRouter);
 app.use("/posts", postRouter);
 app.use("/reactions", reactionRouter);
 app.use("/profilePictures", profilePictureRouter);
+app.use("/notifications", notificationRouter);
 app.use(errorHandler);
 connectToDb()
   .then(() => {
+    // updateIsReadToFalse();
     app.listen(process.env.PORT || 3000, () => {
       console.log("live at ", `http://localhost:${process.env.PORT || 3000}`);
     });

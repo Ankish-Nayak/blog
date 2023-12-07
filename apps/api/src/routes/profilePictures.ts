@@ -4,18 +4,7 @@ import multer from "multer";
 import { authenticateJwt } from "../middlewares/auth";
 
 export const router = express.Router();
-// storing images to disk space
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, path.join(__dirname, "../../data/"));
-//   },
-//   filename: (req, file, cb) => {
-//     cb(
-//       null,
-//       file.originalname + "-" + Date.now() + path.extname(file.originalname),
-//     );
-//   },
-// });
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
@@ -44,13 +33,9 @@ router.get(
     try {
       const profilePicture = await ProfilePicture.findOne({ userId });
       if (profilePicture) {
-        res.contentType(profilePicture.photo.contentType as string);
-        res.send(profilePicture.photo.data);
+        res.json({ photo: profilePicture.photo });
       } else {
-        res.status(404).json({
-          error: "Not Found",
-          message: "The requested resource could not be found in the database.",
-        });
+        res.status(402).json({ message: "profile photo not found" });
       }
     } catch (e) {
       next(e);
@@ -156,7 +141,7 @@ router.put(
 router.delete(
   "/profile",
   authenticateJwt,
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (_req: Request, res: Response, next: NextFunction) => {
     try {
       res.json({ message: "profile picture deleted" });
     } catch (e) {
