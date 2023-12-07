@@ -1,9 +1,10 @@
-import { connect } from "mongoose";
 import { config } from "dotenv";
+import { connect } from "mongoose";
 export * from "./posts";
-export * from "./users";
-export * from "./reactions";
 export * from "./profilePictures";
+export * from "./reactions";
+export * from "./users";
+export * from "./notifications";
 
 config();
 

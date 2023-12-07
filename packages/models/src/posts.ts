@@ -1,4 +1,4 @@
-import { Schema, model, Types } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
 export interface IPost {
   title: string;
@@ -19,13 +19,18 @@ export interface IPost {
 const postSchema = new Schema<IPost>({
   title: { type: String, required: true },
   content: { type: String, required: true },
-  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+    unique: true,
+  },
   reactionsCount: {
-    thumbsUp: { type: Number, default: 0 },
-    heart: { type: Number, default: 0 },
-    wow: { type: Number, default: 0 },
-    rocket: { type: Number, default: 0 },
-    coffee: { type: Number, default: 0 },
+    thumbsUp: { type: Number, default: 0, min: 0 },
+    heart: { type: Number, default: 0, min: 0 },
+    wow: { type: Number, default: 0, min: 0 },
+    rocket: { type: Number, default: 0, min: 0 },
+    coffee: { type: Number, default: 0, min: 0 },
   },
   reactions: [{ type: Schema.Types.ObjectId, ref: "Reaction", default: [] }],
   createdAt: { type: Date, default: Date.now },

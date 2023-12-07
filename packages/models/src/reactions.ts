@@ -17,6 +17,10 @@ const reactionSchema = new Schema({
     enum: reactionsType,
     required: true,
   },
+  isRead: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 reactionSchema.index(
