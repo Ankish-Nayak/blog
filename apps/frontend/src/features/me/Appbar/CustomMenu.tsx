@@ -15,11 +15,13 @@ import { useNavigate } from "react-router-dom";
 import Profile from "../../user/Profile/ProfileDialog";
 import UpdateProfileDialog from "../../user/UpdateProfile/UpdateProfileDialog";
 import {
+  useGetNotificationCountQuery,
   useGetProfilePicQuery,
   useLogoutMutation,
   useMeQuery,
 } from "../authApiSlice";
 import { logOut, setCredentials } from "../authSlice";
+import NotificationDialog from "./NotificationDialog";
 
 const CustomMenu = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -34,6 +36,12 @@ const CustomMenu = () => {
   } = useGetProfilePicQuery("");
   const { data, isLoading: isMeLoading } = useMeQuery("");
 
+  const {
+    data: notificationCount,
+    isLoading: isNotificaionCountLoading,
+    isSuccess: isNotificaionCountSuccess,
+  } = useGetNotificationCountQuery("");
+
   const dispatch = useDispatch();
   useEffect(() => {
     if (data) dispatch(setCredentials({ user: data.name, id: data.id }));
@@ -41,8 +49,8 @@ const CustomMenu = () => {
   const [show, setShow] = useState(false);
   const [openProfile, setOpenProfile] = useState<boolean>(false);
   const [openUpdateProfile, setOpenUpdateProfile] = useState<boolean>(false);
+  const [openNotification, setOpenNotification] = useState<boolean>(false);
 
-  // const [pic, setPic] = useState<string>(profilePic || "");
   const [profilePicUrl, setProfilePicUrl] = useState<string>(profilePic || "");
 
   useEffect(() => {
@@ -57,6 +65,12 @@ const CustomMenu = () => {
     name: string;
     action: () => void;
   }[] = [
+    {
+      name: "Notifications",
+      action: async () => {
+        setOpenNotification(true);
+      },
+    },
     {
       name: "Profile",
       action: () => {
@@ -117,17 +131,28 @@ const CustomMenu = () => {
         setOpenProfile={setOpenProfile}
         pic={profilePicUrl}
       />
+      <NotificationDialog
+        setOpenNotification={setOpenNotification}
+        openNotification={openNotification}
+      />
       {isLogoutLoading === false && isMeLoading === false && (
         <Tooltip title="Open settings">
+          {/* <Badge badgeContent={4}> */}
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
             {isPicLoading && <Skeleton variant="rounded"></Skeleton>}
+            {/* <Badge */}
+            {/*   badgeContent={isNotificaionCountSuccess ? notificationCount : 9} */}
+            {/*   color={"secondary"} */}
+            {/* > */}
             {isPicSuccess && (
               <Avatar alt="Remy Sharp" src={profilePicUrl}></Avatar>
             )}
             {isPicError && (
               <Avatar alt={data.name}>{data.name[0].toUpperCase()}</Avatar>
             )}
+            {/* </Badge> */}
           </IconButton>
+          {/* </Badge> */}
         </Tooltip>
       )}
       {(isLogoutLoading || isMeLoading || isPicLoading) && (

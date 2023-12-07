@@ -25,15 +25,17 @@ const LoggedInAppBar = () => {
 
   // const { isLoading, isSuccess } = useMeQuery("");
 
+  const navigate = useNavigate();
+
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     console.log("nav opened");
+    navigate("/posts");
     setAnchorElNav(event.currentTarget);
   };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
-  const navigate = useNavigate();
   // if (isLoading) {
   //   return <p>Loading...</p>;
   // }
@@ -85,6 +87,7 @@ const LoggedInAppBar = () => {
       <Box
         sx={{
           flexGrow: 1,
+          justifyContent: "space-evenly",
           display: { xs: "none", md: "flex" },
           alignItems: "center",
           paddingTop: "5px",
