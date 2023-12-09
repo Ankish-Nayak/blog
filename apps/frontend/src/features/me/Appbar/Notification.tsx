@@ -9,10 +9,11 @@ import {
   Tooltip,
 } from "@mui/material";
 import humanReadableDate from "../../../helpers/HumanReadableDate";
-import {
-  useGetProfilePicQuery,
-  useNotificationReadMutation,
-} from "../authApiSlice";
+import { useGetProfilePicQuery } from "../authApiSlice";
+import { useNotificationReadMutation } from "./notificationsApi";
+import { useDispatch } from "react-redux";
+import { updateIsRead } from "./notificationSlice";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 const reactionEmoji = {
   thumbsUp: "👍",
@@ -23,8 +24,12 @@ const reactionEmoji = {
 };
 const Notification = ({
   notification,
+  setUpdated,
 }: {
+  setUpdated: Dispatch<SetStateAction<boolean>>;
   notification: {
+    id: string;
+    isRead: boolean;
     reactionId: string;
     clickedByName: string;
     clickedAt: string;
@@ -41,13 +46,30 @@ const Notification = ({
     isError: isPicError,
   } = useGetProfilePicQuery(notification.clickedBy);
   console.log("clickedBy Id", notification.clickedBy);
+  const [profilePicUrl, setProfilePicUrl] = useState<string>(profilePic || "");
+
+  useEffect(() => {
+    if (isPicSuccess) {
+      setProfilePicUrl(profilePic);
+    }
+  }, [isPicSuccess]);
 
   const [markAsRead, { isSuccess: isMarkAsReadSuccess }] =
     useNotificationReadMutation();
+  const dispatch = useDispatch();
   const handleMarkAsRead = async () => {
     try {
       await markAsRead(notification.reactionId).unwrap();
-    } catch (e) {}
+      setUpdated(true);
+      dispatch(
+        updateIsRead({
+          notificationId: notification.id,
+          isRead: true,
+        }),
+      );
+    } catch (e) {
+      console.log(e);
+    }
   };
   return (
     <ListItem>
@@ -56,7 +78,7 @@ const Notification = ({
         <Tooltip title={notification.clickedByName}>
           <ListItemIcon>
             {isPicSuccess && (
-              <Avatar variant="circular" src={profilePic}></Avatar>
+              <Avatar variant="circular" src={profilePicUrl}></Avatar>
             )}
             {isPicLoading && <Skeleton variant="circular"></Skeleton>}
             {isPicError && (
@@ -75,7 +97,7 @@ const Notification = ({
       >
         {/* {notification.authorId} reacted reactiontype postId and Time At */}
       </ListItemText>
-      <ListItemButton onClick>mark as read</ListItemButton>
+      <ListItemButton onClick={handleMarkAsRead}>mark as read</ListItemButton>
     </ListItem>
   );
 };

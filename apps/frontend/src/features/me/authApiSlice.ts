@@ -137,57 +137,6 @@ const authSlice = apiSlice.injectEndpoints({
     getProfile: builder.query<{ name: string; email: string }, string>({
       query: () => "/users/profile",
     }),
-    getNotificationCount: builder.query<number, string>({
-      query: () => "/users/notifications/notification-count",
-      transformResponse(res: { notificationCount: number }) {
-        return res.notificationCount;
-      },
-    }),
-    getNotifications: builder.query<
-      {
-        _id: string;
-        postId: {
-          _id: string;
-          title: string;
-          userId: string;
-        };
-        clickedBy: {
-          _id: string;
-          name: string;
-        };
-        clickedAt: string; // Assuming it's a string representing a date
-        reactionType: "thumbsUp" | "heart" | "wow" | "coffee" | "rocket";
-        isRead: boolean;
-      }[],
-      string
-    >({
-      query: () => "/users/notifications",
-      transformResponse: (res: {
-        notifications: {
-          _id: string;
-          postId: {
-            _id: string;
-            title: string;
-            userId: string;
-          };
-          clickedBy: {
-            _id: string;
-            name: string;
-          };
-          clickedAt: string; // Assuming it's a string representing a date
-          reactionType: "thumbsUp" | "heart" | "wow" | "coffee" | "rocket";
-          isRead: false;
-        }[];
-      }) => {
-        return res.notifications;
-      },
-    }),
-    notificationRead: builder.mutation<{ success: true }, string>({
-      query: (reactionId) => ({
-        url: `/users/notifications/${reactionId}/mark-as-read`,
-        method: "PUT",
-      }),
-    }),
   }),
   overrideExisting: false,
 });
@@ -202,8 +151,8 @@ export const {
   useGetProfilePicQuery,
   useUpdateProfilePicMutation,
   useGetNotificationCountQuery,
-  useGetNotificationsQuery,
-  useNotificationReadMutation,
+  // useGetNotificationsQuery,
+  // useNotificationReadMutation,
 } = authSlice;
 
 export default authSlice;

@@ -4,6 +4,7 @@ import {
   MenuItem,
   Skeleton,
   Typography,
+  Badge,
 } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
@@ -15,11 +16,12 @@ import { useNavigate } from "react-router-dom";
 import Profile from "../../user/Profile/ProfileDialog";
 import UpdateProfileDialog from "../../user/UpdateProfile/UpdateProfileDialog";
 import {
-  useGetNotificationCountQuery,
   useGetProfilePicQuery,
   useLogoutMutation,
   useMeQuery,
 } from "../authApiSlice";
+
+import { useGetNotificationCountQuery } from "./notificationsApi";
 import { logOut, setCredentials } from "../authSlice";
 import NotificationDialog from "./NotificationDialog";
 
@@ -40,6 +42,7 @@ const CustomMenu = () => {
     data: notificationCount,
     isLoading: isNotificaionCountLoading,
     isSuccess: isNotificaionCountSuccess,
+    refetch: notificationCountRefetch,
   } = useGetNotificationCountQuery("");
 
   const dispatch = useDispatch();
@@ -140,17 +143,23 @@ const CustomMenu = () => {
           {/* <Badge badgeContent={4}> */}
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
             {isPicLoading && <Skeleton variant="rounded"></Skeleton>}
-            {/* <Badge */}
-            {/*   badgeContent={isNotificaionCountSuccess ? notificationCount : 9} */}
-            {/*   color={"secondary"} */}
-            {/* > */}
+
             {isPicSuccess && (
-              <Avatar alt="Remy Sharp" src={profilePicUrl}></Avatar>
+              <Badge
+                badgeContent={isNotificaionCountSuccess ? notificationCount : 9}
+                color={"secondary"}
+              >
+                <Avatar alt="Remy Sharp" src={profilePicUrl}></Avatar>
+              </Badge>
             )}
             {isPicError && (
-              <Avatar alt={data.name}>{data.name[0].toUpperCase()}</Avatar>
+              <Badge
+                badgeContent={isNotificaionCountSuccess ? notificationCount : 9}
+                color={"secondary"}
+              >
+                <Avatar alt={data.name}>{data.name[0].toUpperCase()}</Avatar>
+              </Badge>
             )}
-            {/* </Badge> */}
           </IconButton>
           {/* </Badge> */}
         </Tooltip>

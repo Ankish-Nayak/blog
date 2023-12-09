@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { apiSlice } from "../features/api/apiSlice";
 import authReducer from "../features/me/authSlice";
 import filterReducer from "../features/posts/filtersSlice";
+import notificationsReducer from "../features/me/Appbar/notificationSlice";
 
 const store = configureStore({
   reducer: {
