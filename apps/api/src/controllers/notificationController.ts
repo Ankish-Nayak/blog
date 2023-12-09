@@ -6,7 +6,7 @@ export const markNotificationAsRead = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const reactionId = req.params;
+  const reactionId = req.params.reactionId;
   try {
     await Reaction.findByIdAndUpdate(reactionId, {
       isRead: true,
@@ -15,10 +15,6 @@ export const markNotificationAsRead = async (
   } catch (e) {
     next(e);
   }
-};
-
-const notNull = (value: any) => {
-  return value !== null;
 };
 export const getNotificationForLoggedInUser = async (
   req: Request,
@@ -43,38 +39,10 @@ export const getNotificationForLoggedInUser = async (
         path: "clickedBy",
         select: "name",
       })
+      .select("-__v")
       .exec();
-    res.json({ notifications: reactions });
-    // const resReactions = reactions.map((reaction) => {
-    //   return {};
-    // });
-    //
-    // const notifications = await Notification.find({
-    //   authorId: userId,
-    // }).populate({
-    //   path: "reactionId",
-    //   populate: {
-    //     path: "clickedBy",
-    //   },
-    // });
-    // const resNotifications = notifications
-    //   .map((notification) => {
-    //     return {
-    //       clickedByName: notification.reactionId.clickedBy.name,
-    //       clickedAt: notification.reactionId.clickedAt,
-    //       postId: notification.reactionId.postId,
-    //       clickedBy: notification.reactionId.clickedBy._id,
-    //       authorId: notification.authorId,
-    //       reactionType: notification.reactionId.reactionType,
-    //     };
-    //   })
-    //   .filter(
-    //     //  filter to make not include the authorid who himself likes the post
-    //     (notification) =>
-    //       notification.authorId.toString() !==
-    //       notification.clickedBy.toString(),
-    //   );
-    // res.json({ notifications: resNotifications });
+    const cleanedResult = reactions.map((doc) => doc._doc);
+    res.json({ notifications: cleanedResult });
   } catch (e) {
     next(e);
   }
@@ -87,8 +55,14 @@ export const getNotificationCount = async (
 ) => {
   const userId = req.headers.userId as string;
   try {
-    const notificationCount = await Notification.countDocuments({
-      authorId: userId,
+    const posts = await Post.find({ userId }).exec();
+
+    // Extract postIds from the found posts
+    const postIds = posts.map((post) => post._id);
+
+    const notificationCount = await Reaction.countDocuments({
+      postId: { $in: postIds },
+      isRead: false,
     });
     res.json({ notificationCount });
   } catch (e) {
@@ -97,7 +71,7 @@ export const getNotificationCount = async (
 };
 
 export const getNotifications = async (
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction,
 ) => {

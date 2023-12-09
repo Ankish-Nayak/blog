@@ -1,7 +1,7 @@
 import Cookies from "cookies";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { User, Notification } from "models";
+import { User } from "models";
 import { loginTypes, signUpTypes, updateProfileTypes } from "types";
 import { secret } from "..";
 import { refreshLoginSession } from "../helpers/removeExpiryToken";

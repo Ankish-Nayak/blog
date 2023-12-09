@@ -1,8 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { Post, Reaction, User, Notification } from "models";
+import { Notification, Post, Reaction, User } from "models";
 import { addReactionType, createPostTypes, updatePostTypes } from "types";
 import transformPost from "../helpers/transformPost";
-import { exit } from "process";
 
 export const createPost = async (
   req: Request,
