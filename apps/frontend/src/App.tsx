@@ -3,10 +3,10 @@ import { Navigate, Routes, Route } from "react-router-dom";
 import PostsList from "./features/posts/PostsList";
 import Layout from "./components/Layout";
 import SinglePostPage from "./features/posts/SinglePostPage";
-import EditPostForm from "./features/posts/EditPostForm";
+import EditPostForm from "./features/posts/editPostForm/EditPostForm";
 import UsersList from "./features/users/UsersList";
 import UserPage from "./features/users/UserPage";
-import AddPostForm from "./features/posts/AddPostForm";
+import AddPostForm from "./features/posts/addPostForm/AddPostForm";
 import HomePage from "./components/HomePage";
 
 function App() {
@@ -18,8 +18,8 @@ function App() {
 
         <Route path="post">
           <Route index element={<AddPostForm />} />
-          <Route path=":postId" element={<SinglePostPage />} />
-          <Route path="edit/:postId" element={<EditPostForm />} />
+          {/* <Route path=":postId" element={<SinglePostPage />} /> */}
+          <Route path=":postId" element={<EditPostForm />} />
         </Route>
 
         <Route path="users">

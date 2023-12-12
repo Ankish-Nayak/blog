@@ -16,14 +16,13 @@ interface IPage {
 }
 const pages: IPage[] = [
   {
-    name: "post",
+    name: "Add Post",
     navigateTo: "post",
   },
+  { name: "Posts", navigateTo: "/posts" },
 ];
 const LoggedInAppBar = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
-
-  // const { isLoading, isSuccess } = useMeQuery("");
 
   const navigate = useNavigate();
 
@@ -36,9 +35,6 @@ const LoggedInAppBar = () => {
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
-  // if (isLoading) {
-  //   return <p>Loading...</p>;
-  // }
   return (
     <div
       style={{

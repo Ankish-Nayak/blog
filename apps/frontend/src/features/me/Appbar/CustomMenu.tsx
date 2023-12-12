@@ -21,9 +21,9 @@ import {
   useMeQuery,
 } from "../authApiSlice";
 
-import { useGetNotificationCountQuery } from "./notificationsApi";
+import { useGetNotificationCountQuery } from "./Notifications/notificationsApi";
 import { logOut, setCredentials } from "../authSlice";
-import NotificationDialog from "./NotificationDialog";
+import NotificationDialog from "./Notifications/NotificationDialog";
 
 const CustomMenu = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -38,12 +38,8 @@ const CustomMenu = () => {
   } = useGetProfilePicQuery("");
   const { data, isLoading: isMeLoading } = useMeQuery("");
 
-  const {
-    data: notificationCount,
-    isLoading: isNotificaionCountLoading,
-    isSuccess: isNotificaionCountSuccess,
-    refetch: notificationCountRefetch,
-  } = useGetNotificationCountQuery("");
+  const { data: notificationCount, isSuccess: isNotificaionCountSuccess } =
+    useGetNotificationCountQuery("");
 
   const dispatch = useDispatch();
   useEffect(() => {

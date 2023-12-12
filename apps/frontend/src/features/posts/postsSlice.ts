@@ -94,11 +94,6 @@ export const postsApiSlice = apiSlice.injectEndpoints({
           });
         };
         const loadedPosts = await promisfy();
-        console.log("loadedPosts", loadedPosts);
-        // const loadedPosts = res.posts.map((post) =>
-        //   newPostData({ post: post }),
-        // );
-
         return postsAdapter.setAll(initialState, loadedPosts);
       },
       providesTags: (result) => {
@@ -135,7 +130,10 @@ export const postsApiSlice = apiSlice.injectEndpoints({
     }),
     addNewPost: builder.mutation<
       void,
-      Omit<IPost, "id" | "date" | "reactions">
+      {
+        title: string;
+        content: string;
+      }
     >({
       query: (initialPost) => ({
         url: "/posts",
@@ -153,7 +151,14 @@ export const postsApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: [{ type: "Post", id: "LIST" }],
     }),
-    updatePost: builder.mutation<void, IPost>({
+    updatePost: builder.mutation<
+      void,
+      {
+        id: string;
+        title: string;
+        content: string;
+      }
+    >({
       query: (initialPost) => ({
         url: `/posts/${initialPost.id}`,
         method: "PUT",

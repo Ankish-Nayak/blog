@@ -1,6 +1,6 @@
-import { loginParams, signUpParams, IgetProfilePicture } from "types";
-import { apiSlice } from "../api/apiSlice";
 import { Buffer } from "buffer";
+import { IgetProfilePicture, loginParams, signUpParams } from "types";
+import { apiSlice } from "../api/apiSlice";
 window.Buffer = window.Buffer || Buffer;
 
 interface ILogin {
@@ -23,6 +23,7 @@ const authSlice = apiSlice.injectEndpoints({
         "User",
         "Auth",
         { type: "Auth", id: "profilePic" },
+        "Notification",
       ],
     }),
     signup: builder.mutation<ILogin, signUpParams>({
@@ -39,7 +40,7 @@ const authSlice = apiSlice.injectEndpoints({
         url: "/users/logout",
         method: "POST",
       }),
-      invalidatesTags: ["Post", "User", "Auth"],
+      // invalidatesTags: ["Post", "User", "Auth", "Notification"],
     }),
     me: builder.query<ILogin, string>({
       query: () => "/users/me",
@@ -150,9 +151,6 @@ export const {
   useMeQuery,
   useGetProfilePicQuery,
   useUpdateProfilePicMutation,
-  useGetNotificationCountQuery,
-  // useGetNotificationsQuery,
-  // useNotificationReadMutation,
 } = authSlice;
 
 export default authSlice;

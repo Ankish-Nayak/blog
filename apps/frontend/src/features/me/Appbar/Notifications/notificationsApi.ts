@@ -1,7 +1,7 @@
 import { EntityState, createSelector } from "@reduxjs/toolkit";
 import { initialState } from "./notificationSlice";
-import { RootState } from "../../../app/store";
-import { apiSlice } from "../../api/apiSlice";
+import { RootState } from "../../../../app/store";
+import { apiSlice } from "../../../api/apiSlice";
 import { notificationsAdapter } from "./notificationSlice";
 export interface INotificationResponse {
   _id: string;

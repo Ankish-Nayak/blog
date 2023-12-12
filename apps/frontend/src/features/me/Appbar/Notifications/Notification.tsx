@@ -8,12 +8,12 @@ import {
   Skeleton,
   Tooltip,
 } from "@mui/material";
-import humanReadableDate from "../../../helpers/HumanReadableDate";
-import { useGetProfilePicQuery } from "../authApiSlice";
-import { useNotificationReadMutation } from "./notificationsApi";
-import { useDispatch } from "react-redux";
-import { updateIsRead } from "./notificationSlice";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import humanReadableDate from "../../../../helpers/HumanReadableDate";
+import { useGetProfilePicQuery } from "../../authApiSlice";
+import { updateIsRead } from "./notificationSlice";
+import { useNotificationReadMutation } from "./notificationsApi";
 
 const reactionEmoji = {
   thumbsUp: "👍",

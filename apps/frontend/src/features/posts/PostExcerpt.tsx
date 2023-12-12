@@ -10,13 +10,13 @@ import {
   createTheme,
 } from "@mui/material";
 // import { createTheme } from "@mui/material/styles";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { RootState } from "../../app/store";
 import PostAuthor from "./PostAuthor";
 import ReactionButtons from "./ReactionButtons";
 import TimeAgo from "./TimeAgo";
 import { selectPostById } from "./postsSlice";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "../../app/store";
 
 const PostExcerpt = ({ postId }: { postId: string }) => {
   const post = useSelector((state: RootState) => selectPostById(state, postId));
@@ -37,7 +37,7 @@ const PostExcerpt = ({ postId }: { postId: string }) => {
           })
         }
       >
-        <Box className={"postExcerpt"} sx={{}}>
+        <Box className={"postExcerpt"}>
           <Card
             variant="outlined"
             sx={{
@@ -71,6 +71,7 @@ const PostExcerpt = ({ postId }: { postId: string }) => {
               </Stack>
             </CardContent>
             <CardActionArea
+              disableRipple
               sx={{
                 position: "absolute",
                 bottom: "10px",

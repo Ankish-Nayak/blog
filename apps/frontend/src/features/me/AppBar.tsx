@@ -3,7 +3,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
 import AdbIcon from "@mui/icons-material/Adb";
 import { Typography } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import LoggedInAppBar from "./Appbar/LoggedInAppBar";
 import { useMeQuery } from "./authApiSlice";
 import { RootState } from "../../app/store";
@@ -16,7 +16,6 @@ function ResponsiveAppBar() {
 
   const { data, isSuccess, isError } = useMeQuery("");
   const dispatch = useDispatch();
-  const location = useLocation();
   const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
@@ -27,8 +26,6 @@ function ResponsiveAppBar() {
       navigate("/");
     }
   }, [data, isSuccess, isError]);
-  console.log("user", user);
-  console.log("pathname", location.pathname);
 
   return (
     <AppBar position="sticky">

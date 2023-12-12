@@ -19,6 +19,7 @@ const PostsList = () => {
     for (let index = 0; index < 12; index++) {
       array.push(
         <div
+          key={index}
           style={{
             margin: "5px",
           }}
@@ -32,7 +33,7 @@ const PostsList = () => {
     console.log("posts", posts);
     const orderedPosts = posts.ids;
     content = orderedPosts.map((id) => (
-      <div style={{ margin: "5px" }}>
+      <div style={{ margin: "5px" }} key={id}>
         <PostExcerpt key={id} postId={id.toString()} />
       </div>
     ));
