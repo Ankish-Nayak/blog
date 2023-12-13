@@ -34,6 +34,7 @@ router.get(
   },
 );
 
+router.get("/savedPosts", authenticateJwt, postController.getSavedPosts);
 router.get("/title/", authenticateJwt, postController.getPostTitles);
 
 router.post("/", authenticateJwt, postController.createPost);
@@ -48,3 +49,14 @@ router.delete("/:id", authenticateJwt, postController.deletePost);
 router.patch("/:id", authenticateJwt, postController.addReactionToPost);
 
 router.get("/:userId", authenticateJwt, postController.getPostById);
+
+router.get(
+  "/savedPosts/:postId/status",
+  authenticateJwt,
+  postController.getSavedPostStatus,
+);
+router.post(
+  "/savedPosts/:postId",
+  authenticateJwt,
+  postController.toggleSavedPost,
+);

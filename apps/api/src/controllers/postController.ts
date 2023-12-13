@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { Notification, Post, Reaction, User } from "models";
+import { Notification, Post, Reaction, User, SavedPost } from "models";
+
 import { addReactionType, createPostTypes, updatePostTypes } from "types";
 import transformPost from "../helpers/transformPost";
 
@@ -339,13 +340,67 @@ export const getPostsByTitle = async (
   }
 };
 
-// module.exports = {
-//   getAllPosts,
-//   getPostById,
-//   getPostsByAuthorName,
-//   getPostsByAuthorId,
-//   createPost,
-//   deletePost,
-//   updatePost,
-//   addReactionType,
-// };
+export const getSavedPosts = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const userId = req.headers.userId as string;
+  try {
+    console.log("saved posts hits");
+    const savedPosts = await SavedPost.find({ savedBy: userId });
+    res.json({ savedPosts });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const toggleSavedPost = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const postId = req.params.postId as string;
+  const userId = req.headers.userId as string;
+  try {
+    const existingSavedPost = await SavedPost.findOne({
+      postId,
+      savedBy: userId,
+    });
+    if (existingSavedPost) {
+      await SavedPost.findOneAndDelete({ postId, savedBy: userId });
+      res.json({ message: "unsaved post" });
+    } else {
+      await SavedPost.create({
+        postId,
+        savedBy: userId,
+      });
+      res.json({ message: "saved post" });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const getSavedPostStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const postId = req.params.postId as string;
+  const userId = req.headers.userId as string;
+
+  try {
+    const existingSavedPost = await SavedPost.findOne({
+      postId,
+      savedBy: userId,
+    });
+    if (existingSavedPost) {
+      res.json({ message: "saved post" });
+    } else {
+      res.json({ message: "not saved post" });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
