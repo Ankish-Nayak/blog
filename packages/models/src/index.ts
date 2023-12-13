@@ -5,6 +5,7 @@ export * from "./profilePictures";
 export * from "./reactions";
 export * from "./users";
 export * from "./notifications";
+export * from "./savedPosts";
 
 config();
 
