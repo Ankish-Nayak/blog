@@ -9,7 +9,7 @@ const baseQuery = fetchBaseQuery({
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: baseQuery,
-  tagTypes: ["Post", "User", "Auth", "Notification"],
+  tagTypes: ["Post", "User", "Auth", "Notification", "SavedPost"],
   // @ts-expect-error dfdf
   endpoints: (builder) => ({}), // eslint-disable-line
 });

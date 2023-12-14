@@ -8,7 +8,7 @@ import MenuItem from "@mui/material/MenuItem";
 import UserSearch from "../UserSearch";
 import TitleSearch from "../TitleSearch";
 import CustomMenu from "./CustomMenu";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 interface IPage {
   name: string;
@@ -25,6 +25,8 @@ const LoggedInAppBar = () => {
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 
   const navigate = useNavigate();
+
+  const location = useLocation();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     console.log("nav opened");
@@ -98,8 +100,8 @@ const LoggedInAppBar = () => {
             {page.name}
           </Button>
         ))}
-        <UserSearch />
-        <TitleSearch />
+        {location.pathname === "/posts" && <TitleSearch />}
+        {location.pathname === "/posts" && <UserSearch />}
       </Box>
       <CustomMenu />
     </div>

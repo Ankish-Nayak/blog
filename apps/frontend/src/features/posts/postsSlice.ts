@@ -10,6 +10,12 @@ import { IFilter } from "./filtersSlice";
 
 export type IReaction = "thumbsUp" | "wow" | "heart" | "rocket" | "coffee";
 
+export interface ISavedPost {
+  postId: string;
+  userId: string;
+  savedAt: string;
+}
+
 export interface IReactions {
   thumbsUp: number;
   wow: number;
@@ -267,6 +273,45 @@ export const postsApiSlice = apiSlice.injectEndpoints({
         }
       },
     }),
+    getSavedPostStatus: builder.query<boolean, string>({
+      query: (postId) => `/posts/savedPosts/${postId}/status`,
+      transformResponse: (res: {
+        message: "saved post" | "not saved post";
+      }) => {
+        return res.message === "saved post" ? true : false;
+      },
+    }),
+    getSavedPosts: builder.query<ISavedPost[], string>({
+      query: () => "/posts/savedPosts",
+      transformResponse: (res: { savedPosts: ISavedPost[] }) => {
+        return res.savedPosts;
+      },
+      providesTags: (res) => {
+        return typeof res === "undefined"
+          ? [{ type: "SavedPost", id: "LIST" }]
+          : [
+              { type: "SavedPost", id: "LIST" },
+              ...res.map((savedPost) => ({
+                type: "SavedPost" as const,
+                id: savedPost.postId,
+              })),
+            ];
+      },
+    }),
+    toggleSavedPost: builder.mutation<boolean, string>({
+      query: (postId) => ({
+        url: `/posts/savedPosts/${postId}`,
+        method: "POST",
+      }),
+      transformResponse: (res: {
+        message: "saved post" | "not saved post";
+      }) => {
+        return res.message === "saved post" ? true : false;
+      },
+      invalidatesTags: (_, __, postId) => {
+        return [{ type: "SavedPost", id: postId }];
+      },
+    }),
   }),
 });
 
@@ -279,6 +324,9 @@ export const {
   useUpdatePostMutation,
   useGetPostQuery,
   useGetPostsByNameQuery,
+  useGetSavedPostStatusQuery,
+  useGetSavedPostsQuery,
+  useToggleSavedPostMutation,
 } = postsApiSlice;
 
 export const selectPostsResult = postsApiSlice.endpoints.getPosts.select({

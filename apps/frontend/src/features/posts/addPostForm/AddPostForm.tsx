@@ -127,7 +127,7 @@ const AddPostForm = () => {
               disabled={!canSave}
               variant="contained"
             >
-              Save Post
+              Post
             </Button>
           </CardActions>
         </Card>

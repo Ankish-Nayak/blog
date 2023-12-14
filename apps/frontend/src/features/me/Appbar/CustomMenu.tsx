@@ -24,6 +24,7 @@ import {
 import { useGetNotificationCountQuery } from "./Notifications/notificationsApi";
 import { logOut, setCredentials } from "../authSlice";
 import NotificationDialog from "./Notifications/NotificationDialog";
+import SavedPostsDialog from "./SavedPosts/SavedPostsDialog";
 
 const CustomMenu = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -49,6 +50,7 @@ const CustomMenu = () => {
   const [openProfile, setOpenProfile] = useState<boolean>(false);
   const [openUpdateProfile, setOpenUpdateProfile] = useState<boolean>(false);
   const [openNotification, setOpenNotification] = useState<boolean>(false);
+  const [openSavedPosts, setOpenSavedPosts] = useState<boolean>(false);
 
   const [profilePicUrl, setProfilePicUrl] = useState<string>(profilePic || "");
 
@@ -80,6 +82,12 @@ const CustomMenu = () => {
       name: "UpdateProfile",
       action: () => {
         setOpenUpdateProfile(true);
+      },
+    },
+    {
+      name: "SavedPosts",
+      action: () => {
+        setOpenSavedPosts(true);
       },
     },
     {
@@ -134,6 +142,7 @@ const CustomMenu = () => {
         setOpenNotification={setOpenNotification}
         openNotification={openNotification}
       />
+      <SavedPostsDialog setOpen={setOpenSavedPosts} open={openSavedPosts} />
       {isLogoutLoading === false && isMeLoading === false && (
         <Tooltip title="Open settings">
           {/* <Badge badgeContent={4}> */}

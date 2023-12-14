@@ -35,8 +35,6 @@ const ReactionButtons = ({ post }: { post: IPost }) => {
     heart: number;
   }>({ ...post.reactionsCount });
 
-  if (post.title === "new Post") console.log(reactions);
-
   const handleAddReaction = async (reactionType: IReaction) => {
     if (loggedInUser.id === null) {
       throw new Error("not logged in");

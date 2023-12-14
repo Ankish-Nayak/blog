@@ -30,7 +30,6 @@ const PostsList = () => {
     }
     content = array;
   } else if (isSuccess) {
-    console.log("posts", posts);
     const orderedPosts = posts.ids;
     content = orderedPosts.map((id) => (
       <div style={{ margin: "5px" }} key={id}>
@@ -40,7 +39,6 @@ const PostsList = () => {
   } else if (isError) {
     content = <p>{JSON.stringify(error)}</p>;
   }
-  console.log(content);
   return (
     <Stack textAlign={"center"} justifyContent={"flex-end"}>
       <Stack flexDirection={"row"} flexWrap={"wrap"} padding={"0px 100px"}>

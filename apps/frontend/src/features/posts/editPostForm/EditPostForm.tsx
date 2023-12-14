@@ -3,18 +3,30 @@ import {
   Card,
   CardActions,
   CardContent,
+  CardHeader,
   Grid,
   TextField,
+  ToggleButton,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PostConfirmDialog from "../addPostForm/PostConfirmDailog";
-import { useGetPostQuery, useUpdatePostMutation } from "../postsSlice";
+import {
+  useGetPostQuery,
+  useGetSavedPostStatusQuery,
+  useToggleSavedPostMutation,
+  useUpdatePostMutation,
+} from "../postsSlice";
 import DeletePostDialog from "./DeletePostDialog";
 import { dataValidation } from "./savePostDataValidation";
 import SimpleBackdrop from "./SimpleBackdrop";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
+import { Bookmark } from "@mui/icons-material";
+import axios from "axios";
+
+// implement add to favourites function (params:type) {
+// FIX:  not to show notificaitons when we liked our own post.
 
 const EditPostForm = () => {
   const { postId } = useParams() as { postId: string };
@@ -41,6 +53,13 @@ const EditPostForm = () => {
   const [openPostDeleteDialog, setOpenPostDeleteDialog] =
     useState<boolean>(false);
 
+  const { data: postSaved, isSuccess: isPostSavedSuccess } =
+    useGetSavedPostStatusQuery(postId);
+
+  const [bookmark, setBookmark] = useState<boolean>(postSaved || false);
+
+  const [toggleSavedPost] = useToggleSavedPostMutation();
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,8 +70,10 @@ const EditPostForm = () => {
     if (isUpdatePostSuccess) {
       navigate("/posts");
     }
-  }, [isPostSuccess, isUpdatePostSuccess]);
-
+    if (isPostSavedSuccess) {
+      setBookmark(postSaved);
+    }
+  }, [isPostSuccess, isUpdatePostSuccess, isPostSavedSuccess]);
   const [open, setOpen] = useState<boolean>(false);
 
   if (isPostLoading) {
@@ -87,11 +108,22 @@ const EditPostForm = () => {
       }
     };
 
+    // const han;
+
     const handleReset = async () => {
       setTitle(post.title);
       setContent(post.content);
       setTitleError(null);
       setContentError(null);
+    };
+
+    const handleBookMark = async () => {
+      try {
+        const res = await toggleSavedPost(postId).unwrap();
+        setBookmark(res);
+      } catch (e) {
+        console.log(e);
+      }
     };
 
     return (
@@ -129,6 +161,16 @@ const EditPostForm = () => {
           padding={"150px"}
         >
           <Card>
+            <CardActions>
+              <ToggleButton
+                value={"bookmark"}
+                selected={bookmark}
+                onChange={handleBookMark}
+              >
+                <Bookmark />
+              </ToggleButton>
+            </CardActions>
+
             <CardContent>
               <TextField
                 type="text"
@@ -167,7 +209,6 @@ const EditPostForm = () => {
                 id="postContent"
               />
             </CardContent>
-
             {userId === post.userId && (
               <CardActions
                 sx={{

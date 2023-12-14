@@ -40,7 +40,6 @@ const authSlice = apiSlice.injectEndpoints({
         url: "/users/logout",
         method: "POST",
       }),
-      // invalidatesTags: ["Post", "User", "Auth", "Notification"],
     }),
     me: builder.query<ILogin, string>({
       query: () => "/users/me",
