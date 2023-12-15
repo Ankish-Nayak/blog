@@ -42,12 +42,14 @@ npm dev
 
 ### Website video
 
-<iframe width="640" height="360" src="https://www.youtube.com/embed/XhwTuzpBfHc" frameborder="0" allowfullscreen></iframe>
+[![Alt text](https://img.youtube.com/vi/XhwTuzpBfHc/0.jpg)](https://www.youtube.com/watch?v=XhwTuzpBfHc)
+
+<!-- <iframe width="640" height="360" src="https://www.youtube.com/embed/XhwTuzpBfHc" frameborder="0" allowfullscreen></iframe> -->
 
 ### Website Images
 
-![Alt text](/home/ankish2000nayak/Pictures/Screenshots/blog-3.png)
+![Alt text](./apps/frontend/public/blog-3.png)
 
-![Alt text](/home/ankish2000nayak/Pictures/Screenshots/blog-1.png)
+![Alt text](./apps/frontend/public/blog-1.png)
 
-![Alt text](/home/ankish2000nayak/Pictures/Screenshots/blog-2.png)
+![Alt text](./apps/frontend/public/blog-2.png)
