@@ -58,5 +58,11 @@ router.get(
 router.post(
   "/savedPosts/:postId",
   authenticateJwt,
-  postController.toggleSavedPost,
+  postController.addSavedPost,
+);
+
+router.delete(
+  "/savedPosts/:postId/status",
+  authenticateJwt,
+  postController.deletePost,
 );

@@ -349,7 +349,52 @@ export const getSavedPosts = async (
   try {
     console.log("saved posts hits");
     const savedPosts = await SavedPost.find({ savedBy: userId });
+
+    console.log("savedPosts", savedPosts);
     res.json({ savedPosts });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const addSavedPost = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const postId = req.params.postId as string;
+  const userId = req.headers.userId as string;
+  try {
+    const existingSavedPost = await SavedPost.findOne({
+      postId,
+      savedBy: userId,
+    });
+    if (existingSavedPost) {
+      res.status(400).json({
+        message: "posts already saved",
+      });
+    } else {
+      const newSavedPost = await SavedPost.create({
+        postId,
+        savedBy: userId,
+      });
+      res.json({ savedPost: newSavedPost });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const removeSavedPost = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const postId = req.params.postId as string;
+  const userId = req.headers.userId as string;
+  try {
+    await SavedPost.findOneAndDelete({ postId, savedBy: userId });
+    res.json({ message: "removed" });
   } catch (e) {
     next(e);
   }
