@@ -10,12 +10,6 @@ import { IFilter } from "./filtersSlice";
 
 export type IReaction = "thumbsUp" | "wow" | "heart" | "rocket" | "coffee";
 
-export interface ISavedPost {
-  postId: string;
-  userId: string;
-  savedAt: string;
-}
-
 export interface IReactions {
   thumbsUp: number;
   wow: number;
@@ -89,10 +83,10 @@ export const postsApiSlice = apiSlice.injectEndpoints({
       },
       transformResponse: async (res: IgetPosts) => {
         console.log("res", res);
-        const promisfy = async (): Promise<IPost> => {
+        const promisfy = async (): Promise<IPost[]> => {
           return new Promise((resO) => {
             const promises = res.posts.map((post) => {
-              return new Promise((resI) => {
+              return new Promise<IPost>((resI) => {
                 resI(newPostData({ post: post }));
               });
             });
@@ -231,86 +225,46 @@ export const postsApiSlice = apiSlice.injectEndpoints({
           reactionType,
         },
       }),
-      async onQueryStarted({ queryFulfilled }) {
-        // manually updating cache
-        // const patchResult = dispatch(
-        //   postsApiSlice.util.updateQueryData(
-        //     "getPosts",
-        //     { title: undefined, name: undefined },
-        //     (draft) => {
-        //       const post = draft.entities[postId];
-        //       if (post) {
-        //         post.reactionsCount = reactionsCount;
-        //         post.clicked = clicked;
-        //       }
-        //     },
-        //   ),
-        // );
-        // const patchResult2 = dispatch(
-        //   postsApiSlice.util.updateQueryData("getPost", postId, (draft) => {
-        //     const post = draft;
-        //     if (post) {
-        //       post.reactionsCount = reactionsCount;
-        //       post.clicked = clicked;
-        //     }
-        //   }),
-        // );
-        try {
-          const { data } = await queryFulfilled;
-          // const { data } = await queryFulfilled;
-          // const patchResult = dispatch(
-          //   postsApiSlice.util.updateQueryData("getPosts", {}, (draft) => {
-          //     const post = draft.entities[postId];
-          //     if (post) {
-          //       post.reactionsCount = data.reactionsCount;
-          //       post.clicked = data.clicked;
-          //     }
-          //   }),
-          // );
-        } catch (e) {
-          // patchResult.undo();
-          // patchResult2.undo();
-        }
-      },
-    }),
-    getSavedPostStatus: builder.query<boolean, string>({
-      query: (postId) => `/posts/savedPosts/${postId}/status`,
-      transformResponse: (res: {
-        message: "saved post" | "not saved post";
-      }) => {
-        return res.message === "saved post" ? true : false;
-      },
-    }),
-    getSavedPosts: builder.query<ISavedPost[], string>({
-      query: () => "/posts/savedPosts",
-      transformResponse: (res: { savedPosts: ISavedPost[] }) => {
-        return res.savedPosts;
-      },
-      providesTags: (res) => {
-        return typeof res === "undefined"
-          ? [{ type: "SavedPost", id: "LIST" }]
-          : [
-              { type: "SavedPost", id: "LIST" },
-              ...res.map((savedPost) => ({
-                type: "SavedPost" as const,
-                id: savedPost.postId,
-              })),
-            ];
-      },
-    }),
-    toggleSavedPost: builder.mutation<boolean, string>({
-      query: (postId) => ({
-        url: `/posts/savedPosts/${postId}`,
-        method: "POST",
-      }),
-      transformResponse: (res: {
-        message: "saved post" | "not saved post";
-      }) => {
-        return res.message === "saved post" ? true : false;
-      },
-      invalidatesTags: (_, __, postId) => {
-        return [{ type: "SavedPost", id: postId }];
-      },
+      // async onQueryStarted({ queryFulfilled }) {
+      //   // manually updating cache
+      //   // const patchResult = dispatch(
+      //   //   postsApiSlice.util.updateQueryData(
+      //   //     "getPosts",
+      //   //     { title: undefined, name: undefined },
+      //   //     (draft) => {
+      //   //       const post = draft.entities[postId];
+      //   //       if (post) {
+      //   //         post.reactionsCount = reactionsCount;
+      //   //         post.clicked = clicked;
+      //   //       }
+      //   //     },
+      //   //   ),
+      //   // );
+      //   // const patchResult2 = dispatch(
+      //   //   postsApiSlice.util.updateQueryData("getPost", postId, (draft) => {
+      //   //     const post = draft;
+      //   //     if (post) {
+      //   //       post.reactionsCount = reactionsCount;
+      //   //       post.clicked = clicked;
+      //   //     }
+      //   //   }),
+      //   // );
+      //   try {
+      //     // const { data } = await queryFulfilled;
+      //     // const patchResult = dispatch(
+      //     //   postsApiSlice.util.updateQueryData("getPosts", {}, (draft) => {
+      //     //     const post = draft.entities[postId];
+      //     //     if (post) {
+      //     //       post.reactionsCount = data.reactionsCount;
+      //     //       post.clicked = data.clicked;
+      //     //     }
+      //     //   }),
+      //     // );
+      //   } catch (e) {
+      //     // patchResult.undo();
+      //     // patchResult2.undo();
+      //   }
+      // },
     }),
   }),
 });
@@ -324,9 +278,6 @@ export const {
   useUpdatePostMutation,
   useGetPostQuery,
   useGetPostsByNameQuery,
-  useGetSavedPostStatusQuery,
-  useGetSavedPostsQuery,
-  useToggleSavedPostMutation,
 } = postsApiSlice;
 
 export const selectPostsResult = postsApiSlice.endpoints.getPosts.select({

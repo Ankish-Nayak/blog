@@ -3,7 +3,6 @@ import {
   Card,
   CardActions,
   CardContent,
-  CardHeader,
   Grid,
   TextField,
   ToggleButton,
@@ -11,19 +10,18 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PostConfirmDialog from "../addPostForm/PostConfirmDailog";
-import {
-  useGetPostQuery,
-  useGetSavedPostStatusQuery,
-  useToggleSavedPostMutation,
-  useUpdatePostMutation,
-} from "../postsSlice";
+import { useGetPostQuery, useUpdatePostMutation } from "../postsSlice";
 import DeletePostDialog from "./DeletePostDialog";
 import { dataValidation } from "./savePostDataValidation";
 import SimpleBackdrop from "./SimpleBackdrop";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../app/store";
 import { Bookmark } from "@mui/icons-material";
-import axios from "axios";
+import {
+  useAddSavedPostMutation,
+  useGetSavedPostStatusQuery,
+  useRemovedSavedPostMutation,
+} from "../../me/Appbar/SavedPosts/savedPostsApi";
 
 // implement add to favourites function (params:type) {
 // FIX:  not to show notificaitons when we liked our own post.
@@ -58,7 +56,9 @@ const EditPostForm = () => {
 
   const [bookmark, setBookmark] = useState<boolean>(postSaved || false);
 
-  const [toggleSavedPost] = useToggleSavedPostMutation();
+  const [addSavedPost] = useAddSavedPostMutation();
+
+  const [removeSavedPost] = useRemovedSavedPostMutation();
 
   const navigate = useNavigate();
 
@@ -119,8 +119,13 @@ const EditPostForm = () => {
 
     const handleBookMark = async () => {
       try {
-        const res = await toggleSavedPost(postId).unwrap();
-        setBookmark(res);
+        if (postSaved) {
+          await removeSavedPost(postId).unwrap();
+          setBookmark(false);
+        } else {
+          await addSavedPost(postId).unwrap();
+          setBookmark(true);
+        }
       } catch (e) {
         console.log(e);
       }

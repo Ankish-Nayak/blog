@@ -347,10 +347,10 @@ export const getSavedPosts = async (
 ) => {
   const userId = req.headers.userId as string;
   try {
-    console.log("saved posts hits");
-    const savedPosts = await SavedPost.find({ savedBy: userId });
-
-    console.log("savedPosts", savedPosts);
+    const savedPosts = await SavedPost.find({ savedBy: userId }).populate({
+      path: "postId",
+      select: "id userId",
+    });
     res.json({ savedPosts });
   } catch (e) {
     next(e);

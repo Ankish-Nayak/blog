@@ -55,7 +55,12 @@ export const usersApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useGetUserQuery, useGetUsersQuery } = usersApiSlice;
+export const {
+  useGetUserQuery,
+  useGetUsersQuery,
+  useLazyGetUserQuery,
+  useLazyGetUsersQuery,
+} = usersApiSlice;
 
 export const selectUsersResult =
   usersApiSlice.endpoints.getUsers.select("getUsers");
