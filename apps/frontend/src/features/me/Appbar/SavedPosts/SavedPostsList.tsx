@@ -1,7 +1,8 @@
 import { List } from "@mui/material";
-import { useGetSavedPostsQuery } from "../../../posts/postsSlice";
-import SavedPost from "./SavedPost";
 import { Dispatch, SetStateAction, useEffect } from "react";
+import SavedPost from "./SavedPost";
+import { useGetSavedPostsQuery } from "./savedPostsApi";
+import { savedPostsAdapter } from "./savedPostSlice";
 const SavedPostsList = ({
   setOpen,
   open,
@@ -18,6 +19,8 @@ const SavedPostsList = ({
     refetch: savedPostRefetch,
   } = useGetSavedPostsQuery("");
 
+  const { selectAll } = savedPostsAdapter.getSelectors();
+
   useEffect(() => {
     if (open) {
       savedPostRefetch();
@@ -27,10 +30,14 @@ const SavedPostsList = ({
   if (isSavedPostsLoading) {
     return <>Loading...</>;
   } else if (isSavedPostsSuccess && savedPosts) {
-    const list = savedPosts.map((savedPost) => (
+    const orderedSavedPosts = selectAll(savedPosts);
+    console.log("orderedSavedPosts", orderedSavedPosts);
+    const list = orderedSavedPosts.map((savedPost, id) => (
       <SavedPost
-        key={savedPost.postId}
-        savedPost={savedPost}
+        key={id}
+        userId={savedPost.authorId}
+        postId={savedPost.postId}
+        savedAt={savedPost.savedAt}
         setOpen={setOpen}
       />
     ));

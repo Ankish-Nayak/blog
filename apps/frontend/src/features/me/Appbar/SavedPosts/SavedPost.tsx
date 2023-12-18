@@ -11,24 +11,33 @@ import {
 } from "@mui/material";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { default as humanReadableDate } from "../../../../helpers/HumanReadableDate";
-import {
-  ISavedPost,
-  useToggleSavedPostMutation,
-} from "../../../posts/postsSlice";
 import { useGetUserQuery } from "../../../users/usersSlice";
 import { useGetProfilePicQuery } from "../../authApiSlice";
+import {
+  useAddSavedPostMutation,
+  useGetSavedPostStatusQuery,
+  useRemovedSavedPostMutation,
+} from "./savedPostsApi";
+import humanReadableDate from "../../../../helpers/HumanReadableDate";
 const SavedPost = ({
-  savedPost,
   setOpen,
+  userId,
+  postId,
+  savedAt,
 }: {
-  savedPost: ISavedPost;
+  userId: string;
+  postId: string;
+  savedAt: string;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const { data: user, isSuccess: isUserSuccess } = useGetUserQuery(
-    savedPost.userId,
-  );
+  const [addSavedPost] = useAddSavedPostMutation();
+  const [removeSavedPost] = useRemovedSavedPostMutation();
 
+  const navigate = useNavigate();
+  const { data: user, isSuccess: isUserSuccess } = useGetUserQuery(userId);
+  const { data: savedPostStatus } = useGetSavedPostStatusQuery(postId);
+
+  console.log(savedAt, postId, userId);
   const [name, setName] = useState<string>("");
 
   const {
@@ -36,9 +45,7 @@ const SavedPost = ({
     isLoading: isPicLoading,
     isSuccess: isPicSuccess,
     isError: isPicError,
-  } = useGetProfilePicQuery(savedPost.userId);
-  const [toggleSavedPost] = useToggleSavedPostMutation();
-  const navigate = useNavigate();
+  } = useGetProfilePicQuery(userId);
 
   const [profilePicUrl, setProfilePicUrl] = useState<string>(profilePic || "");
 
@@ -52,7 +59,11 @@ const SavedPost = ({
   }, [isPicSuccess]);
   const handleDeleteButton = async () => {
     try {
-      await toggleSavedPost(savedPost.postId).unwrap();
+      if (savedPostStatus) {
+        await removeSavedPost(postId).unwrap();
+      } else {
+        await addSavedPost(postId).unwrap();
+      }
     } catch (e) {
       console.log(e);
     }
@@ -72,13 +83,13 @@ const SavedPost = ({
       </ListItemAvatar>
       <ListItemButton
         onClick={() => {
-          navigate(`/post/${savedPost.postId}`);
+          navigate(`/post/${postId}`);
           setOpen(false);
         }}
       >
         <ListItemText
           primary={"post title"}
-          secondary={humanReadableDate(savedPost.savedAt)}
+          secondary={humanReadableDate(savedAt)}
         ></ListItemText>
       </ListItemButton>
       <ListItemButton onClick={handleDeleteButton}>
