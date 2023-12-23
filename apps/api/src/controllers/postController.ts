@@ -168,10 +168,11 @@ export const deletePost = async (
   next: NextFunction,
 ) => {
   const id = req.params.id;
+  const userId = req.headers.userId as string;
   try {
     const existingPost = await Post.find({ _id: id });
     if (existingPost) {
-      const deletedPost = await Post.deleteOne({ _id: id });
+      const deletedPost = await Post.deleteOne({ _id: id, userId });
       if (deletedPost) {
         res.json({ _id: id, message: "Post deleted" });
       } else {

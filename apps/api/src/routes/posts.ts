@@ -62,7 +62,7 @@ router.post(
 );
 
 router.delete(
-  "/savedPosts/:postId/status",
+  "/savedPosts/:postId",
   authenticateJwt,
-  postController.deletePost,
+  postController.removeSavedPost,
 );
