@@ -1,8 +1,10 @@
-import { List } from "@mui/material";
+import { List, Typography } from "@mui/material";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import SavedPost from "./SavedPost";
+import { selectAllSavedPosts } from "./savedPostsApi";
 import { useGetSavedPostsQuery } from "./savedPostsApi";
-import { savedPostsAdapter } from "./savedPostSlice";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../app/store";
 const SavedPostsList = ({
   setOpen,
   open,
@@ -19,7 +21,9 @@ const SavedPostsList = ({
     refetch: savedPostRefetch,
   } = useGetSavedPostsQuery("");
 
-  const { selectAll } = savedPostsAdapter.getSelectors();
+  const orderedSavedPosts = useSelector((state: RootState) =>
+    selectAllSavedPosts(state),
+  );
 
   useEffect(() => {
     if (open) {
@@ -30,8 +34,9 @@ const SavedPostsList = ({
   if (isSavedPostsLoading) {
     return <>Loading...</>;
   } else if (isSavedPostsSuccess && savedPosts) {
-    const orderedSavedPosts = selectAll(savedPosts);
-    console.log("orderedSavedPosts", orderedSavedPosts);
+    if (orderedSavedPosts.length === 0) {
+      return <Typography>No saved Posts</Typography>;
+    }
     const list = orderedSavedPosts.map((savedPost, id) => (
       <SavedPost
         key={id}

@@ -11,14 +11,11 @@ import {
 } from "@mui/material";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import humanReadableDate from "../../../../helpers/HumanReadableDate";
 import { useGetUserQuery } from "../../../users/usersSlice";
 import { useGetProfilePicQuery } from "../../authApiSlice";
-import {
-  useAddSavedPostMutation,
-  useGetSavedPostStatusQuery,
-  useRemovedSavedPostMutation,
-} from "./savedPostsApi";
-import humanReadableDate from "../../../../helpers/HumanReadableDate";
+import { useRemovedSavedPostMutation } from "./savedPostsApi";
+import ProfileDialog from "../../../user/Profile/ProfileDialog";
 const SavedPost = ({
   setOpen,
   userId,
@@ -30,15 +27,14 @@ const SavedPost = ({
   savedAt: string;
   setOpen: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const [addSavedPost] = useAddSavedPostMutation();
   const [removeSavedPost] = useRemovedSavedPostMutation();
 
   const navigate = useNavigate();
   const { data: user, isSuccess: isUserSuccess } = useGetUserQuery(userId);
-  const { data: savedPostStatus } = useGetSavedPostStatusQuery(postId);
 
-  console.log(savedAt, postId, userId);
   const [name, setName] = useState<string>("");
+
+  const [openProfile, setOpenProfile] = useState<boolean>(false);
 
   const {
     data: profilePic,
@@ -59,25 +55,33 @@ const SavedPost = ({
   }, [isPicSuccess]);
   const handleDeleteButton = async () => {
     try {
-      if (savedPostStatus) {
-        await removeSavedPost(postId).unwrap();
-      } else {
-        await addSavedPost(postId).unwrap();
-      }
+      await removeSavedPost(postId).unwrap();
     } catch (e) {
       console.log(e);
     }
   };
   return (
     <ListItem>
+      <ProfileDialog
+        id={userId}
+        pic={profilePicUrl}
+        show={openProfile}
+        setOpenProfile={setOpenProfile}
+      />
       <ListItemAvatar>
         <Tooltip title={name}>
-          <ListItemIcon>
+          <ListItemIcon
+            onClick={() => {
+              setOpenProfile(true);
+            }}
+          >
             {isPicSuccess && (
               <Avatar variant="circular" src={profilePicUrl}></Avatar>
             )}
             {isPicLoading && <Skeleton variant="circular"></Skeleton>}
-            {isPicError && <Avatar variant="circular">{"A"}</Avatar>}
+            {isPicError && (
+              <Avatar variant="circular">{name.at(0)?.toUpperCase()}</Avatar>
+            )}
           </ListItemIcon>
         </Tooltip>
       </ListItemAvatar>

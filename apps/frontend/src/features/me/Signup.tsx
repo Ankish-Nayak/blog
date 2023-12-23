@@ -1,4 +1,3 @@
-import { useCallback, useState } from "react";
 import {
   Box,
   Button,
@@ -9,11 +8,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { signUpParams, signUpTypes } from "types";
+import { useCallback, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { signUpParams, signUpTypes } from "types";
+import { isApiResponse } from "../api/apiSlice";
 import { useSignupMutation } from "./authApiSlice";
 import { setCredentials } from "./authSlice";
-import { useDispatch } from "react-redux";
 
 const Signup = ({
   setHaveAccount,
@@ -44,8 +45,6 @@ const Signup = ({
       };
       const parsedData = signUpTypes.safeParse(data);
       if (!parsedData.success) {
-        parsedData.error.name;
-        console.log(parsedData.error.errors);
         parsedData.error.errors.map((error) => {
           ["name", "email", "password"].forEach((s) => {
             if (error.path.includes(s)) {
@@ -90,7 +89,10 @@ const Signup = ({
           return <p>Loading...</p>;
         }
       } catch (e) {
-        console.log(e);
+        if (isApiResponse(e)) {
+          setEmailError(e.data.error);
+          setPasswordError(e.data.error);
+        }
       }
     }
   }, [

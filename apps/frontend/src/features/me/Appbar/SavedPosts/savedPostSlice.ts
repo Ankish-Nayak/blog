@@ -4,6 +4,7 @@ import {
   createSlice,
 } from "@reduxjs/toolkit";
 export interface ISavedPost {
+  id: string;
   postId: string;
   savedBy: string;
   authorId: string;
@@ -37,6 +38,7 @@ const savedPostsSlice = createSlice({
         return false;
       });
       if (id) {
+        console.log("removed", id);
         savedPostsAdapter.removeOne(state, id);
       }
     },

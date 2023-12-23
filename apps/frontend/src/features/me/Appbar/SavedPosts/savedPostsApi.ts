@@ -23,22 +23,25 @@ export const savedPostsApi = apiSlice.injectEndpoints({
       query: () => "/posts/savedPosts",
       transformResponse: async (res: {
         savedPosts: {
+          _id: string;
           savedBy: string;
           postId: {
-            id: string;
+            _id: string;
             userId: string;
           };
           savedAt: string;
         }[];
       }) => {
+        console.log("res", res);
         const promifiy = (): Promise<ISavedPost[]> => {
           return new Promise<ISavedPost[]>((resO) => {
             const promises = res.savedPosts.map((savedPost) => {
               return new Promise<ISavedPost>((resi) => {
                 resi({
+                  id: savedPost._id,
                   savedBy: savedPost.savedBy,
                   savedAt: savedPost.savedAt,
-                  postId: savedPost.postId.id,
+                  postId: savedPost.postId._id,
                   authorId: savedPost.postId.userId,
                 });
               });
@@ -64,7 +67,7 @@ export const savedPostsApi = apiSlice.injectEndpoints({
     }),
     addSavedPost: builder.mutation<ISavedPost, string>({
       query: (postId) => ({
-        url: `/posts/savedPost/${postId}`,
+        url: `/posts/savedPosts/${postId}`,
         method: "POST",
       }),
       transformResponse: (res: { savedPost: ISavedPost }) => {
@@ -81,7 +84,7 @@ export const savedPostsApi = apiSlice.injectEndpoints({
     }),
     removedSavedPost: builder.mutation<string, string>({
       query: (postId) => ({
-        url: `/posts/savedPost/${postId}`,
+        url: `/posts/savedPosts/${postId}`,
         method: "DELETE",
       }),
       transformResponse: (res: { message: string }) => {
@@ -94,6 +97,9 @@ export const savedPostsApi = apiSlice.injectEndpoints({
         } catch (e) {
           console.log(e);
         }
+      },
+      invalidatesTags: (_, __, postId) => {
+        return [{ type: "SavedPost", id: postId }];
       },
     }),
   }),

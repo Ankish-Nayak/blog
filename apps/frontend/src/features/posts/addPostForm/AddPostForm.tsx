@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useAddNewPostMutation } from "../postsSlice";
 import PostConfirmDialog from "./PostConfirmDailog";
 import { dataValidation } from "./addPostDataValidation";
+import { createPostParams, createPostTypes } from "types";
 
 const AddPostForm = () => {
   const [addNewPost, { isLoading }] = useAddNewPostMutation();

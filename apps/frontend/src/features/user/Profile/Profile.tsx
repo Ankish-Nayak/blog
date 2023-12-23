@@ -6,19 +6,11 @@ import {
   CircularProgress,
   TextField,
 } from "@mui/material";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../app/store";
 import { BASE_URL } from "../../api/apiSlice";
 import { useGetUserQuery } from "../../users/usersSlice";
 
-const Profile = ({ pic }: { pic: string }) => {
-  const id = useSelector((state: RootState) => state.auth.id);
+const Profile = ({ pic, id }: { pic: string; id: string }) => {
   const { data: user, isLoading, isSuccess } = useGetUserQuery(id as string);
-  // const {
-  //   data: pic,
-  //   isLoading: isPicLoading,
-  //   isSuccess: isPicSuccess,
-  // } = useGetProfilePicQuery("");
 
   console.log("link", `${BASE_URL}/profilePictures/profile/${id}`);
   if (isLoading) {

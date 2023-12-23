@@ -1,3 +1,4 @@
+import { Bookmark } from "@mui/icons-material";
 import {
   Button,
   Card,
@@ -8,20 +9,19 @@ import {
   ToggleButton,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import PostConfirmDialog from "../addPostForm/PostConfirmDailog";
-import { useGetPostQuery, useUpdatePostMutation } from "../postsSlice";
-import DeletePostDialog from "./DeletePostDialog";
-import { dataValidation } from "./savePostDataValidation";
-import SimpleBackdrop from "./SimpleBackdrop";
 import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import { RootState } from "../../../app/store";
-import { Bookmark } from "@mui/icons-material";
 import {
   useAddSavedPostMutation,
   useGetSavedPostStatusQuery,
   useRemovedSavedPostMutation,
 } from "../../me/Appbar/SavedPosts/savedPostsApi";
+import PostConfirmDialog from "../addPostForm/PostConfirmDailog";
+import { useGetPostQuery, useUpdatePostMutation } from "../postsSlice";
+import DeletePostDialog from "./DeletePostDialog";
+import SimpleBackdrop from "./SimpleBackdrop";
+import { dataValidation } from "./savePostDataValidation";
 
 // implement add to favourites function (params:type) {
 // FIX:  not to show notificaitons when we liked our own post.

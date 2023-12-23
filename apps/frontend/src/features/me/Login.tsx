@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -9,12 +8,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { loginParams, loginTypes } from "types";
-import { useNavigate } from "react-router-dom";
-import { useLoginMutation } from "./authApiSlice";
-import CircularIndeterminate from "./loaders/CircurlarIndeterminate";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { loginParams, loginTypes } from "types";
+import { isApiResponse } from "../api/apiSlice";
+import { useLoginMutation } from "./authApiSlice";
 import { setCredentials } from "./authSlice";
+import CircularIndeterminate from "./loaders/CircurlarIndeterminate";
 
 const Login = ({
   setHaveAccount,
@@ -76,12 +77,13 @@ const Login = ({
         // if (isLoginSuccess) {
         dispatch(setCredentials({ user: res.name, id: res.id }));
         navigate("/posts");
-        // console.log(res);
-        // } else if (isLoginLoading) {
-        // return <p>Loading...</p>;
-        // }
       } catch (e) {
-        console.log(e);
+        if (isApiResponse(e)) {
+          setEmailError(e.data.error);
+          setPasswordError(e.data.error);
+        } else {
+          console.log(e);
+        }
       }
     }
   }, [

@@ -1,9 +1,9 @@
-import { List } from "@mui/material";
+import { List, Typography } from "@mui/material";
 // import { useGetNotificationsQuery } from "../authApiSlice";
+import { useEffect, useState } from "react";
+import Notification from "./Notification";
 import { notificationsAdapter } from "./notificationSlice";
 import { useGetNotificationsQuery } from "./notificationsApi";
-import Notification from "./Notification";
-import { useEffect, useState } from "react";
 const Notifications = ({ show }: { show: boolean }) => {
   const {
     data: notifications,
@@ -29,6 +29,9 @@ const Notifications = ({ show }: { show: boolean }) => {
     return <p>Loading...</p>;
   } else if (isNotificationsSuccess && notifications) {
     const orderedNotifications = selectAll(notifications) || [];
+    if (orderedNotifications.length === 0) {
+      return <Typography>No Notifications</Typography>;
+    }
     const renderendNotification = orderedNotifications
       .filter((notification) => !notification.isRead)
       .map((notification) => {

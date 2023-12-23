@@ -3,23 +3,18 @@ import React from "react";
 import Profile from "./Profile";
 
 const ProfileDialog = ({
+  id,
   pic,
   show,
   setOpenProfile,
 }: {
+  id: string;
   pic: string;
   show: boolean;
   setOpenProfile: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   return (
     <>
-      <Button
-        onClick={() => {
-          setOpenProfile(!show);
-        }}
-      >
-        Open
-      </Button>
       <Dialog
         onClose={() => {
           setOpenProfile(false);
@@ -27,7 +22,7 @@ const ProfileDialog = ({
         open={show}
       >
         <DialogContent>
-          <Profile pic={pic} />
+          <Profile pic={pic} id={id} />
         </DialogContent>
         <DialogActions>
           <Button

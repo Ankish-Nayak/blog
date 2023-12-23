@@ -1,17 +1,17 @@
 import {
+  Badge,
   CircularProgress,
   Menu,
   MenuItem,
   Skeleton,
   Typography,
-  Badge,
 } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Profile from "../../user/Profile/ProfileDialog";
 import UpdateProfileDialog from "../../user/UpdateProfile/UpdateProfileDialog";
@@ -21,9 +21,10 @@ import {
   useMeQuery,
 } from "../authApiSlice";
 
-import { useGetNotificationCountQuery } from "./Notifications/notificationsApi";
+import { RootState } from "../../../app/store";
 import { logOut, setCredentials } from "../authSlice";
 import NotificationDialog from "./Notifications/NotificationDialog";
+import { useGetNotificationCountQuery } from "./Notifications/notificationsApi";
 import SavedPostsDialog from "./SavedPosts/SavedPostsDialog";
 
 const CustomMenu = () => {
@@ -53,6 +54,8 @@ const CustomMenu = () => {
   const [openSavedPosts, setOpenSavedPosts] = useState<boolean>(false);
 
   const [profilePicUrl, setProfilePicUrl] = useState<string>(profilePic || "");
+
+  const id = useSelector((state: RootState) => state.auth.id);
 
   useEffect(() => {
     if (isPicSuccess) {
@@ -134,6 +137,7 @@ const CustomMenu = () => {
         setProfilePicUrl={setProfilePicUrl}
       />
       <Profile
+        id={id as string}
         show={openProfile}
         setOpenProfile={setOpenProfile}
         pic={profilePicUrl}
